@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/homeRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#f9f9f9">
+
+    <TextView
+        android:id="@+id/welcomeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Welcome!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#222"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingBottom="24dp" />
+
+
+    <!-- Tasks Group (Bottom Left) -->
+    <LinearLayout
+        android:id="@+id/tasksGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="start"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/stepGoalButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Step Goal" />
+
+        <Button
+            android:id="@+id/waterGoalButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Water Goal"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/restGoalButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Rest Goal"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+    <!-- Optional Tasks Group (Bottom Right) -->
+    <LinearLayout
+        android:id="@+id/optionalTasksGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="end"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/memoryTaskButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Memory Task" />
+
+        <Button
+            android:id="@+id/balanceTaskButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Balance Task"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/breathingTaskButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Breathing Exercise"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
