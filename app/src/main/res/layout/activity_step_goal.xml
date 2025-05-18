@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/stepGoalRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green_700"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/stepsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Steps done: 0"
+        android:textSize="28sp"
+        android:textColor="@android:color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/stepsProgressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_below="@id/stepsTextView"
+        android:layout_marginTop="24dp"
+        android:progress="0"
+        android:max="100"
+        android:progressTint="@android:color/holo_green_light"
+        android:backgroundTint="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/stepsRemainingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Steps remaining: 10000"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/stepsProgressBar"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
