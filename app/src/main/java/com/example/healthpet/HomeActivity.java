@@ -1,7 +1,12 @@
 package com.example.healthpet;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.ImageDecoder;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -9,6 +14,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.bumptech.glide.Glide;
+
+import java.io.IOException;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -20,12 +29,35 @@ public class HomeActivity extends AppCompatActivity {
 
     private SharedPreferences prefs;
 
+    @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         welcomeTextView = findViewById(R.id.welcomeTextView);
+
+        /*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.Source source = ImageDecoder.createSource(R.drawable.koala_eating);
+            try {
+                @SuppressLint("WrongThread") Drawable drawable = null;
+                drawable = ImageDecoder.decodeDrawable(source);
+            } catch (IOException e) {
+                //TODO: real catch
+                throw new RuntimeException(e);
+            }
+            ImageView gifView = findViewById(R.id.koala_eating);
+        gifView.setImageDrawable(drawable);
+            ((AnimatedImageDrawable)drawable).start();
+        }
+        */
+
+        ImageView gifView = findViewById(R.id.koala_eating);
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.koala_eating)
+                .into(gifView);
 
         stepGoalButton = findViewById(R.id.stepGoalButton);
         waterGoalButton = findViewById(R.id.waterGoalButton);

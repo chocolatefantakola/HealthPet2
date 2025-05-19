@@ -21,6 +21,13 @@
             android:textColor="@android:color/white"
             android:layout_marginBottom="24dp" />
 
+        <ImageView
+            android:id="@+id/koala_eating"
+            android:layout_width="229dp"
+            android:layout_height="343dp"
+            android:layout_marginBottom="24dp"
+           />
+
         <!-- Row 1 -->
         <LinearLayout
             android:layout_width="match_parent"
