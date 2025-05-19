@@ -3,6 +3,7 @@ package com.example.healthpet;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -74,11 +75,32 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        Button showKoalaButton = findViewById(R.id.showKoalaButton);
-        LottieAnimationView koalaView = findViewById(R.id.koala_eating);
+        LottieAnimationView eating = findViewById(R.id.koala_eating);
+        LottieAnimationView crying = findViewById(R.id.koala_crying);
+        Button makeHappy = findViewById(R.id.makeHappyButton);
 
-        showKoalaButton.setOnClickListener(v -> {
-            koalaView.setVisibility(View.VISIBLE);
+        Handler handler = new Handler();
+        Runnable cryRunnable = () -> {
+            eating.setVisibility(View.GONE);
+            crying.setVisibility(View.VISIBLE);
+            crying.playAnimation();
+        };
+
+// Bei Start erstmal essen zeigen:
+        eating.setVisibility(View.VISIBLE);
+        eating.playAnimation();
+        handler.postDelayed(cryRunnable, 5000); // Timer startet sofort
+
+        makeHappy.setOnClickListener(v -> {
+            crying.setVisibility(View.GONE);
+            eating.setVisibility(View.VISIBLE);
+            eating.playAnimation();
+
+            handler.removeCallbacks(cryRunnable);              // Timer zurücksetzen
+            handler.postDelayed(cryRunnable, 5000);            // Neuer 5s-Timer
         });
+
+
+
     }
 }
