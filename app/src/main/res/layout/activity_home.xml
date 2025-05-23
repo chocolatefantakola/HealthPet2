@@ -35,27 +35,59 @@
         <!-- Placeholder Space for Koala --> <!-- geändert -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="270dp"
+            android:layout_height="400dp"
             android:layout_marginBottom="24dp">
 
             <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/koala_eating"
+                android:id="@+id/koala_1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:visibility="gone"
                 app:lottie_autoPlay="true"
-                app:lottie_fileName="koala_eating.json"
+                app:lottie_fileName="koala_1.json"
+                app:lottie_loop="true" />
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_2.json"
                 app:lottie_loop="true" />
 
             <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/koala_crying"
+                android:id="@+id/koala_3"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:visibility="gone"
                 app:lottie_autoPlay="true"
-                app:lottie_fileName="koala_crying.json"
+                app:lottie_fileName="koala_3.json"
+                app:lottie_loop="true" />
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_4.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_5.json"
                 app:lottie_loop="true" />
         </FrameLayout>
         <!-- Row 1 -->

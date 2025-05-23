@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 
@@ -21,8 +20,14 @@ public class HomeActivity extends AppCompatActivity {
 
     private Button stepGoalButton, waterGoalButton, restGoalButton;
     private Button memoryTaskButton, balanceTaskButton, breathingTaskButton;
+    private Button makeHappyButton;
 
     private SharedPreferences prefs;
+
+    private LottieAnimationView[] koalas;
+    private int currentLevel = 0;
+    private Handler handler = new Handler();
+    private Runnable sadnessRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,9 @@ public class HomeActivity extends AppCompatActivity {
         memoryTaskButton = findViewById(R.id.memoryTaskButton);
         balanceTaskButton = findViewById(R.id.balanceTaskButton);
         breathingTaskButton = findViewById(R.id.breathingTaskButton);
+        makeHappyButton = findViewById(R.id.makeHappyButton);
+
+
 
         // Set distinct background colors for buttons
         stepGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
@@ -74,33 +82,49 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this, BreathingTaskActivity.class);
             startActivity(intent);
         });
-
-        LottieAnimationView eating = findViewById(R.id.koala_eating);
-        LottieAnimationView crying = findViewById(R.id.koala_crying);
-        Button makeHappy = findViewById(R.id.makeHappyButton);
-
-        Handler handler = new Handler();
-        Runnable cryRunnable = () -> {
-            eating.setVisibility(View.GONE);
-            crying.setVisibility(View.VISIBLE);
-            crying.playAnimation();
+        koalas = new LottieAnimationView[] {
+                findViewById(R.id.koala_1),
+                findViewById(R.id.koala_2),
+                findViewById(R.id.koala_3),
+                findViewById(R.id.koala_4),
+                findViewById(R.id.koala_5)
         };
+        //initial anzeigen und sadness starten
 
-// Bei Start erstmal essen zeigen:
-        eating.setVisibility(View.VISIBLE);
-        eating.playAnimation();
-        handler.postDelayed(cryRunnable, 5000); // Timer startet sofort
+        showKoala(currentLevel);
+        scheduleSadness();
 
-        makeHappy.setOnClickListener(v -> {
-            crying.setVisibility(View.GONE);
-            eating.setVisibility(View.VISIBLE);
-            eating.playAnimation();
-
-            handler.removeCallbacks(cryRunnable);              // Timer zurücksetzen
-            handler.postDelayed(cryRunnable, 5000);            // Neuer 5s-Timer
+        makeHappyButton.setOnClickListener(v -> {
+            handler.removeCallbacks(sadnessRunnable);
+            if (currentLevel > 0) {
+                currentLevel--;
+                showKoala(currentLevel);
+            }
+            scheduleSadness();
         });
+    }
+
+
+        private void showKoala(int level) {
+            for (int i = 0; i < koalas.length; i++) {
+                koalas[i].setVisibility(i == level ? View.VISIBLE : View.GONE);
+                if (i == level) koalas[i].playAnimation();
+            }
+        }
+
+    private void scheduleSadness() {
+        sadnessRunnable = () -> {
+            if (currentLevel < koalas.length - 1) {
+                currentLevel++;
+                showKoala(currentLevel);
+                scheduleSadness();
+            }
+        };
+        handler.postDelayed(sadnessRunnable, 5000);
+    }
 
 
 
     }
-}
+
+
