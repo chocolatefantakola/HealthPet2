@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,12 +16,16 @@ import com.airbnb.lottie.LottieAnimationView;
 
 public class HomeActivity extends AppCompatActivity {
 
+    private ScrollView roootScrollView;
     private TextView welcomeTextView;
     private ImageView petImageView;
 
     private Button stepGoalButton, waterGoalButton, restGoalButton;
     private Button memoryTaskButton, balanceTaskButton, breathingTaskButton;
     private Button makeHappyButton;
+
+    private Button changeBackgroundButton;
+    private int currentBackground = 0;
 
     private SharedPreferences prefs;
 
@@ -37,7 +42,7 @@ public class HomeActivity extends AppCompatActivity {
         welcomeTextView = findViewById(R.id.welcomeTextView);
 
 
-
+        ScrollView rootScrollView = findViewById(R.id.rootScrollView);
         stepGoalButton = findViewById(R.id.stepGoalButton);
         waterGoalButton = findViewById(R.id.waterGoalButton);
         restGoalButton = findViewById(R.id.restGoalButton);
@@ -45,6 +50,10 @@ public class HomeActivity extends AppCompatActivity {
         balanceTaskButton = findViewById(R.id.balanceTaskButton);
         breathingTaskButton = findViewById(R.id.breathingTaskButton);
         makeHappyButton = findViewById(R.id.makeHappyButton);
+        changeBackgroundButton = findViewById(R.id.change_background);
+
+
+
 
 
 
@@ -102,6 +111,29 @@ public class HomeActivity extends AppCompatActivity {
             }
             scheduleSadness();
         });
+
+
+        changeBackgroundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (currentBackground) {
+                    case 0:
+                        rootScrollView.setBackgroundResource(R.drawable.bg_gradient); // z.B. pink
+                        currentBackground = 1;
+                        break;
+
+                    case 1:
+                        rootScrollView.setBackgroundResource(R.drawable.bg_gradient_green);
+                        currentBackground = 2;
+                        break;
+
+                    case 2:
+                        rootScrollView.setBackgroundResource(R.drawable.bg_gradient_red);
+                        currentBackground = 0;
+                        break;
+                }
+            }
+        });
     }
 
 
@@ -122,6 +154,11 @@ public class HomeActivity extends AppCompatActivity {
         };
         handler.postDelayed(sadnessRunnable, 5000);
     }
+
+
+
+
+
 
 
 

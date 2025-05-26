@@ -16,7 +16,13 @@
     <color name="yellow">#FFEB3B</color>
     <color name="green">#4CAF50</color> <!-- A pleasant green -->
 
-    <!-- Optional background gradient colors -->
+    <!--  background gradient colors -->
     <color name="background_start">#8EC5FC</color>
     <color name="background_end">#E0C3FC</color>
+
+    <color name="background_start2">#E01616</color>
+    <color name="background_end2">#E49999</color>
+
+
+
 </resources>
