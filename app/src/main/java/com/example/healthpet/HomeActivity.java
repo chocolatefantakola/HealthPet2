@@ -25,12 +25,12 @@ public class HomeActivity extends AppCompatActivity {
     private Button makeHappyButton;
 
     private Button changeBackgroundButton;
-    private int currentBackground = 0;
+    private int currentBackground =1;
 
     private SharedPreferences prefs;
 
     private LottieAnimationView[] koalas;
-    private int currentLevel = 0;
+    private int currentLevel=3;
     private Handler handler = new Handler();
     private Runnable sadnessRunnable;
 
@@ -119,7 +119,7 @@ public class HomeActivity extends AppCompatActivity {
                 switch (currentBackground) {
                     case 0:
                         rootScrollView.setBackgroundResource(R.drawable.bg_gradient); // z.B. pink
-                        currentBackground = 1;
+                        currentBackground =1;
                         break;
 
                     case 1:
@@ -129,7 +129,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     case 2:
                         rootScrollView.setBackgroundResource(R.drawable.bg_gradient_red);
-                        currentBackground = 0;
+                        currentBackground =0;
                         break;
                 }
             }
