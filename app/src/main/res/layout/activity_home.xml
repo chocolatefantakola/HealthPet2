@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient"
@@ -8,52 +9,113 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/welcomeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Welcome back!"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="24dp" />
-
-        <ImageView
-            android:id="@+id/koala_eating"
-            android:layout_width="229dp"
-            android:layout_height="343dp"
             android:layout_marginBottom="24dp"
-           />
+            android:text="Welcome back!"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
+
+        <Button
+            android:id="@+id/makeHappyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Make Happy"
+            android:backgroundTint="@color/blue"
+            android:textColor="@android:color/white" />
+
+        <!-- Placeholder Space for Koala --> <!-- geändert -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_marginBottom="24dp">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_1.json"
+                app:lottie_loop="true" />
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_2.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_3.json"
+                app:lottie_loop="true" />
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_4.json"
+                app:lottie_loop="true" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/koala_5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="koala_5.json"
+                app:lottie_loop="true" />
+        </FrameLayout>
         <!-- Row 1 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/stepGoalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="🚶 Steps"
+                android:layout_weight="1"
                 android:backgroundTint="@color/blue"
+                android:text="🚶 Steps"
                 android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/waterGoalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="💧 Water"
+                android:layout_weight="1"
                 android:backgroundTint="@color/teal_200"
+                android:text="💧 Water"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
@@ -61,28 +123,28 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/restGoalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="🛌 Rest"
+                android:layout_weight="1"
                 android:backgroundTint="@color/orange"
+                android:text="🛌 Rest"
                 android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/memoryTaskButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="🧠 Memory"
+                android:layout_weight="1"
                 android:backgroundTint="@color/purple_500"
+                android:text="🧠 Memory"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
@@ -90,28 +152,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/balanceTaskButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="🧍 Balance"
+                android:layout_weight="1"
                 android:backgroundTint="@color/red"
+                android:text="🧍 Balance"
                 android:textColor="@android:color/white" />
+
 
             <Button
                 android:id="@+id/breathingTaskButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="🌬️ Breathe"
+                android:layout_weight="1"
                 android:backgroundTint="@color/yellow"
+                android:text="🌬️ Breathe"
                 android:textColor="@android:color/black" />
         </LinearLayout>
+
     </LinearLayout>
+
 </ScrollView>

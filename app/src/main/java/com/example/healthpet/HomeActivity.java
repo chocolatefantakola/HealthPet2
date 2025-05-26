@@ -1,23 +1,17 @@
 package com.example.healthpet;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.ImageDecoder;
-import android.graphics.drawable.AnimatedImageDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.bumptech.glide.Glide;
-
-import java.io.IOException;
+import com.airbnb.lottie.LottieAnimationView;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -26,10 +20,15 @@ public class HomeActivity extends AppCompatActivity {
 
     private Button stepGoalButton, waterGoalButton, restGoalButton;
     private Button memoryTaskButton, balanceTaskButton, breathingTaskButton;
+    private Button makeHappyButton;
 
     private SharedPreferences prefs;
 
-    @SuppressLint("WrongThread")
+    private LottieAnimationView[] koalas;
+    private int currentLevel = 0;
+    private Handler handler = new Handler();
+    private Runnable sadnessRunnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,27 +36,7 @@ public class HomeActivity extends AppCompatActivity {
 
         welcomeTextView = findViewById(R.id.welcomeTextView);
 
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.Source source = ImageDecoder.createSource(R.drawable.koala_eating);
-            try {
-                @SuppressLint("WrongThread") Drawable drawable = null;
-                drawable = ImageDecoder.decodeDrawable(source);
-            } catch (IOException e) {
-                //TODO: real catch
-                throw new RuntimeException(e);
-            }
-            ImageView gifView = findViewById(R.id.koala_eating);
-        gifView.setImageDrawable(drawable);
-            ((AnimatedImageDrawable)drawable).start();
-        }
-        */
 
-        ImageView gifView = findViewById(R.id.koala_eating);
-        Glide.with(this)
-                .asGif()
-                .load(R.drawable.koala_eating)
-                .into(gifView);
 
         stepGoalButton = findViewById(R.id.stepGoalButton);
         waterGoalButton = findViewById(R.id.waterGoalButton);
@@ -65,6 +44,9 @@ public class HomeActivity extends AppCompatActivity {
         memoryTaskButton = findViewById(R.id.memoryTaskButton);
         balanceTaskButton = findViewById(R.id.balanceTaskButton);
         breathingTaskButton = findViewById(R.id.breathingTaskButton);
+        makeHappyButton = findViewById(R.id.makeHappyButton);
+
+
 
         // Set distinct background colors for buttons
         stepGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
@@ -100,5 +82,49 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(HomeActivity.this, BreathingTaskActivity.class);
             startActivity(intent);
         });
+        koalas = new LottieAnimationView[] {
+                findViewById(R.id.koala_1),
+                findViewById(R.id.koala_2),
+                findViewById(R.id.koala_3),
+                findViewById(R.id.koala_4),
+                findViewById(R.id.koala_5)
+        };
+        //initial anzeigen und sadness starten
+
+        showKoala(currentLevel);
+        scheduleSadness();
+
+        makeHappyButton.setOnClickListener(v -> {
+            handler.removeCallbacks(sadnessRunnable);
+            if (currentLevel > 0) {
+                currentLevel--;
+                showKoala(currentLevel);
+            }
+            scheduleSadness();
+        });
     }
-}
+
+
+        private void showKoala(int level) {
+            for (int i = 0; i < koalas.length; i++) {
+                koalas[i].setVisibility(i == level ? View.VISIBLE : View.GONE);
+                if (i == level) koalas[i].playAnimation();
+            }
+        }
+
+    private void scheduleSadness() {
+        sadnessRunnable = () -> {
+            if (currentLevel < koalas.length - 1) {
+                currentLevel++;
+                showKoala(currentLevel);
+                scheduleSadness();
+            }
+        };
+        handler.postDelayed(sadnessRunnable, 5000);
+    }
+
+
+
+    }
+
+
