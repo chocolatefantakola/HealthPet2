@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:background="@drawable/bg_gradient_green">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -15,23 +16,95 @@
         android:id="@+id/instructionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get ready..."
-        android:textSize="24sp"
+        android:text="Choose your breathing exercise."
+        android:textSize="20sp"
         android:gravity="center"
-        android:padding="20dp" />
+        android:textColor="#FFFFFF"
+        android:layout_below="@id/toolbar"
+        android:paddingTop="24dp"
+        android:paddingBottom="12dp" />
 
-    <TextView
-        android:id="@+id/timerText"
+    <LinearLayout
+        android:id="@+id/choiceLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:gravity="center" />
+        android:layout_below="@id/instructionText"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/btn478"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4-7-8 Breathing"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/info478"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:src="@android:drawable/ic_dialog_info"
+                android:contentDescription="Info 4-7-8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btnAlternate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alternate Nostril"
+                android:backgroundTint="#2196F3"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/infoAlternate"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:src="@android:drawable/ic_dialog_info"
+                android:contentDescription="Info Alternate" />
+        </LinearLayout>
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_marginTop="20dp" />
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        android:layout_below="@id/choiceLayout"
+        android:layout_marginTop="24dp"
+        android:progressTint="#FFD700"
+        android:backgroundTint="#444444"
+        android:indeterminate="false"
+        android:visibility="gone" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START"
+        android:layout_below="@id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="#673AB7"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:visibility="gone" />
+</RelativeLayout>

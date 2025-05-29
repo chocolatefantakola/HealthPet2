@@ -68,7 +68,7 @@
                 android:layout_marginStart="16dp"/>
         </RadioGroup>
 
-        <!-- Height input -->
+
         <EditText
             android:id="@+id/heightInput"
             android:layout_width="match_parent"
@@ -79,7 +79,7 @@
             android:background="@android:drawable/edit_text"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Weight input -->
+
         <EditText
             android:id="@+id/weightInput"
             android:layout_width="match_parent"
@@ -90,7 +90,7 @@
             android:background="@android:drawable/edit_text"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Sex -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

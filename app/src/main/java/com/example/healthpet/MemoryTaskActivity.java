@@ -1,12 +1,15 @@
 package com.example.healthpet;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,22 +17,29 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 public class MemoryTaskActivity extends AppCompatActivity {
 
-    private RelativeLayout rootLayout;
-    private TextView instructionText, timerText;
     private Toolbar toolbar;
+    private TextView instructionText;
 
-    private final int CIRCLE_COUNT = 6;
-    private final int CIRCLE_SIZE_DP = 70;
+    private LinearLayout gameChoiceLayout;
+    private Button numberGameButton, colorGameButton;
 
-    private ArrayList<TextView> circles = new ArrayList<>();
-    private int nextNumberToSelect = 1;
+    private LinearLayout numberGameLayout;
+    private LinearLayout colorGameLayout;
 
-    private final long SHOW_NUMBERS_TIME = 10_000; // 10 seconds to memorize
-    private final long SHUFFLE_DURATION = 4_000; // 4 seconds shuffle animation
+    // Number game variables
+    private ArrayList<Integer> numberSequence = new ArrayList<>();
+    private ArrayList<Button> numberButtons = new ArrayList<>();
+    private int currentNumberIndex = 0;
+    private boolean numberGameActive = false;
+
+    // Color game variables
+    private ArrayList<Integer> colorPairs = new ArrayList<>();
+    private ArrayList<View> colorTiles = new ArrayList<>();
+    private int firstColorIndex = -1;
+    private boolean colorGameActive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,205 +48,257 @@ public class MemoryTaskActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        rootLayout = findViewById(R.id.rootLayout);
         instructionText = findViewById(R.id.instructionText);
-        timerText = findViewById(R.id.timerText);
 
-        startInstructionTimer();
+        gameChoiceLayout = findViewById(R.id.gameChoiceLayout);
+        numberGameButton = findViewById(R.id.numberGameButton);
+        colorGameButton = findViewById(R.id.colorGameButton);
+
+        numberGameLayout = findViewById(R.id.numberGameLayout);
+        colorGameLayout = findViewById(R.id.colorGameLayout);
+
+        numberGameButton.setOnClickListener(v -> startNumberGame());
+        colorGameButton.setOnClickListener(v -> startColorGame());
+
+        showIntro();
     }
 
-    private void startInstructionTimer() {
-        instructionText.setText("Remember the numbers!");
-        timerText.setVisibility(View.VISIBLE);
+    private void showIntro() {
+        instructionText.setText("Choose a memory game below.");
+        gameChoiceLayout.setVisibility(View.VISIBLE);
+        numberGameLayout.setVisibility(View.GONE);
+        colorGameLayout.setVisibility(View.GONE);
+        numberGameActive = false;
+        colorGameActive = false;
+    }
 
-        new CountDownTimer(SHOW_NUMBERS_TIME, 500) {
-            public void onTick(long millisUntilFinished) {
-                timerText.setText(String.valueOf(millisUntilFinished / 1000));
-            }
+    // ------------------------ NUMBER GAME ------------------------
 
+    private void startNumberGame() {
+        gameChoiceLayout.setVisibility(View.GONE);
+        colorGameLayout.setVisibility(View.GONE);
+        numberGameLayout.setVisibility(View.VISIBLE);
+        instructionText.setText("Memorize the numbers in order!");
+
+        numberButtons.clear();
+        numberSequence.clear();
+        currentNumberIndex = 0;
+        numberGameActive = true;
+        numberGameLayout.removeAllViews();
+
+        // Prepare numbers 1 to 5
+        for (int i = 1; i <= 5; i++) numberSequence.add(i);
+
+        // Create buttons in order
+        for (int num : numberSequence) {
+            Button btn = createNumberButton(String.valueOf(num));
+            btn.setTag(num);
+            numberButtons.add(btn);
+            numberGameLayout.addView(btn);
+        }
+
+        // Show numbers for 5 seconds, then shuffle with animation and hide numbers as '?'
+        new CountDownTimer(5000, 1000) {
+            public void onTick(long millisUntilFinished) { }
             public void onFinish() {
-                timerText.setVisibility(View.GONE);
-                setupCircles();
-                showNumbers();
-                startShowNumbersTimer();
+                shuffleAndHideNumbers();
             }
         }.start();
     }
 
-    private void setupCircles() {
-        int circleSizePx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CIRCLE_SIZE_DP, getResources().getDisplayMetrics());
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int screenHeight = getResources().getDisplayMetrics().heightPixels;
-
-        rootLayout.removeAllViews();
-
-        // Add toolbar, instructionText, timerText back to rootLayout
-        rootLayout.addView(toolbar);
-        rootLayout.addView(instructionText);
-        rootLayout.addView(timerText);
-
-        circles.clear();
-        Random random = new Random();
-
-        for (int i = 1; i <= CIRCLE_COUNT; i++) {
-            TextView circle = new TextView(this);
-            circle.setText(String.valueOf(i));
-            circle.setTextColor(Color.WHITE);
-            circle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            circle.setBackgroundColor(Color.BLUE);
-            circle.setGravity(Gravity.CENTER);
-            circle.setId(View.generateViewId());
-            circle.setTag(i);
-
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(circleSizePx, circleSizePx);
-
-            // Keep circles inside visible screen area (avoid status bar and toolbar)
-            int maxX = screenWidth - circleSizePx - 50;
-            int maxY = screenHeight - circleSizePx - 300; // give extra bottom margin
-
-            int x = random.nextInt(maxX);
-            int y = random.nextInt(maxY);
-
-            params.leftMargin = x;
-            params.topMargin = y;
-
-            rootLayout.addView(circle, params);
-            circles.add(circle);
-
-            circle.setEnabled(false);
-        }
+    private Button createNumberButton(String text) {
+        Button btn = new Button(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, 150, 1);
+        params.setMargins(8, 0, 8, 0);
+        btn.setLayoutParams(params);
+        btn.setText(text);
+        btn.setTextSize(32f);
+        btn.setTextColor(Color.WHITE);
+        btn.setBackgroundColor(Color.DKGRAY);
+        return btn;
     }
 
-    private void showNumbers() {
-        instructionText.setText("Memorize the numbers!");
-        for (TextView circle : circles) {
-            circle.setText(String.valueOf(circle.getTag()));
-            circle.setBackgroundColor(Color.BLUE);
-            circle.setEnabled(false);
-            circle.setVisibility(View.VISIBLE);
+    private void shuffleAndHideNumbers() {
+        ArrayList<Integer> originalPositions = new ArrayList<>();
+        for (int i = 0; i < numberButtons.size(); i++) {
+            originalPositions.add(i);
         }
-    }
+        ArrayList<Integer> shuffledPositions = new ArrayList<>(originalPositions);
+        Collections.shuffle(shuffledPositions);
 
-    private void startShowNumbersTimer() {
-        new CountDownTimer(SHOW_NUMBERS_TIME, 1000) {
-            public void onTick(long millisUntilFinished) {
-                timerText.setVisibility(View.VISIBLE);
-                timerText.setText(String.valueOf(millisUntilFinished / 1000));
-            }
+        AnimatorSet animatorSet = new AnimatorSet();
+        ArrayList<Animator> animations = new ArrayList<>();
 
-            public void onFinish() {
-                timerText.setVisibility(View.GONE);
-                hideNumbers();
-                shuffleCirclesSlowly(() -> {
-                    enableCirclesForSelection();
-                    instructionText.setText("Tap numbers in order!");
-                });
-            }
-        }.start();
-    }
+        for (int i = 0; i < numberButtons.size(); i++) {
+            Button btn = numberButtons.get(i);
+            int newPos = shuffledPositions.get(i);
 
-    private void hideNumbers() {
-        for (TextView circle : circles) {
-            circle.setText("");
-            circle.setBackgroundColor(Color.BLACK);
-            circle.setEnabled(false);
-            circle.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void shuffleCirclesSlowly(Runnable onComplete) {
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int screenHeight = getResources().getDisplayMetrics().heightPixels;
-        int circleSizePx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CIRCLE_SIZE_DP, getResources().getDisplayMetrics());
-
-        Random random = new Random();
-
-        ArrayList<Position> targetPositions = new ArrayList<>();
-        for (int i = 0; i < circles.size(); i++) {
-            int maxX = screenWidth - circleSizePx - 50;
-            int maxY = screenHeight - circleSizePx - 300;
-
-            int x = random.nextInt(maxX);
-            int y = random.nextInt(maxY);
-            targetPositions.add(new Position(x, y));
+            int distance = (newPos - i) * (btn.getWidth() + 16);
+            ObjectAnimator animX = ObjectAnimator.ofFloat(btn, "translationX", btn.getTranslationX(), distance);
+            animations.add(animX);
         }
 
-        Collections.shuffle(targetPositions);
-
-        final int steps = 60;
-        final long frameDuration = SHUFFLE_DURATION / steps;
-
-        ArrayList<Position> startPositions = new ArrayList<>();
-        for (TextView circle : circles) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) circle.getLayoutParams();
-            startPositions.add(new Position(params.leftMargin, params.topMargin));
-        }
-
-        final int[] currentStep = {0};
-
-        Runnable frameRunnable = new Runnable() {
+        animatorSet.playTogether(animations);
+        animatorSet.setDuration(800);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void run() {
-                if (currentStep[0] > steps) {
-                    for (int i = 0; i < circles.size(); i++) {
-                        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) circles.get(i).getLayoutParams();
-                        params.leftMargin = targetPositions.get(i).x;
-                        params.topMargin = targetPositions.get(i).y;
-                        circles.get(i).setLayoutParams(params);
-                    }
-                    onComplete.run();
-                    return;
+            public void onAnimationEnd(Animator animation) {
+                for (Button btn : numberButtons) {
+                    btn.setText("?");
+                    btn.setBackgroundColor(Color.BLUE);
+                    btn.setEnabled(true);
+                    btn.setOnClickListener(v -> checkNumberButton((Button) v));
                 }
-
-                float fraction = (float) currentStep[0] / steps;
-                for (int i = 0; i < circles.size(); i++) {
-                    int startX = startPositions.get(i).x;
-                    int startY = startPositions.get(i).y;
-                    int endX = targetPositions.get(i).x;
-                    int endY = targetPositions.get(i).y;
-
-                    int newX = (int) (startX + fraction * (endX - startX));
-                    int newY = (int) (startY + fraction * (endY - startY));
-
-                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) circles.get(i).getLayoutParams();
-                    params.leftMargin = newX;
-                    params.topMargin = newY;
-                    circles.get(i).setLayoutParams(params);
-                }
-                currentStep[0]++;
-                rootLayout.postDelayed(this, frameDuration);
+                instructionText.setText("Tap numbers in order: 1 → 5");
             }
-        };
-
-        rootLayout.post(frameRunnable);
+        });
+        animatorSet.start();
     }
 
-    private void enableCirclesForSelection() {
-        nextNumberToSelect = 1;
-        for (TextView circle : circles) {
-            circle.setEnabled(true);
-            circle.setOnClickListener(v -> {
-                int clickedNumber = (int) v.getTag();
-                if (clickedNumber == nextNumberToSelect) {
-                    v.setBackgroundColor(Color.GREEN);
-                    nextNumberToSelect++;
-                    if (nextNumberToSelect > CIRCLE_COUNT) {
-                        finish();
-                    }
-                } else {
-                    v.setBackgroundColor(Color.RED);
-                }
-            });
+    private void checkNumberButton(Button btn) {
+        if (!numberGameActive) return;
+
+        int tappedNumber = (int) btn.getTag();
+
+        if (tappedNumber == currentNumberIndex + 1) {
+            currentNumberIndex++;
+            btn.setBackgroundColor(Color.GREEN);
+            btn.setText(String.valueOf(tappedNumber));
+            btn.setEnabled(false);
+
+            if (currentNumberIndex == 5) {
+                instructionText.setText("Congrats! You completed the Number Game.");
+                numberGameActive = false;
+
+                btn.postDelayed(this::showIntro, 2000);
+            }
+        } else {
+            btn.setBackgroundColor(Color.RED);
+            instructionText.setText("Wrong! Try again.");
+            resetNumberGame();
         }
     }
 
-    private static class Position {
-        int x, y;
-        Position(int x, int y) { this.x = x; this.y = y; }
+    private void resetNumberGame() {
+        currentNumberIndex = 0;
+        for (Button btn : numberButtons) {
+            btn.setBackgroundColor(Color.BLUE);
+            btn.setText("?");
+            btn.setEnabled(true);
+        }
+    }
+
+    // ------------------------ COLOR GAME ------------------------
+
+    private void startColorGame() {
+        gameChoiceLayout.setVisibility(View.GONE);
+        numberGameLayout.setVisibility(View.GONE);
+        colorGameLayout.setVisibility(View.VISIBLE);
+
+        instructionText.setText("Memorize colors and find all pairs!");
+
+        colorGameActive = true;
+        firstColorIndex = -1;
+        colorTiles.clear();
+        colorPairs.clear();
+        colorGameLayout.removeAllViews();
+
+        // Prepare color pairs (two of each color)
+        colorPairs.add(Color.RED);
+        colorPairs.add(Color.RED);
+        colorPairs.add(Color.BLUE);
+        colorPairs.add(Color.BLUE);
+        colorPairs.add(Color.GREEN);
+        colorPairs.add(Color.GREEN);
+
+        Collections.shuffle(colorPairs);
+
+        // Create tiles as Views
+        for (int i = 0; i < colorPairs.size(); i++) {
+            View tile = new View(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, 200, 1);
+            params.setMargins(8, 0, 8, 0);
+            tile.setLayoutParams(params);
+            tile.setBackgroundColor(colorPairs.get(i));
+            tile.setTag("hidden"); // initially visible but will hide after timer
+            final int index = i;
+            tile.setOnClickListener(v -> onColorTileClicked(index));
+            colorTiles.add(tile);
+            colorGameLayout.addView(tile);
+        }
+
+        // Show colors for 4 seconds, then hide tiles (set black background)
+        new CountDownTimer(4000, 1000) {
+            public void onTick(long millisUntilFinished) {}
+            public void onFinish() {
+                for (View tile : colorTiles) {
+                    tile.setBackgroundColor(Color.BLACK);
+                    tile.setTag("hidden");
+                }
+                instructionText.setText("Tap tiles to find matching colors.");
+            }
+        }.start();
+    }
+
+    private void onColorTileClicked(int index) {
+        if (!colorGameActive) return;
+
+        View clickedTile = colorTiles.get(index);
+        String state = (String) clickedTile.getTag();
+
+        if ("matched".equals(state) || "visible".equals(state)) {
+            // Ignore clicks on matched or currently visible tiles
+            return;
+        }
+
+        // Reveal clicked tile
+        clickedTile.setBackgroundColor(colorPairs.get(index));
+        clickedTile.setTag("visible");
+
+        if (firstColorIndex == -1) {
+            // First tile selected
+            firstColorIndex = index;
+        } else {
+            // Second tile selected
+            if (colorPairs.get(firstColorIndex).equals(colorPairs.get(index))) {
+                // Match found
+                colorTiles.get(firstColorIndex).setTag("matched");
+                colorTiles.get(index).setTag("matched");
+                instructionText.setText("Good job! Keep finding pairs.");
+
+                // Check if all matched
+                if (allColorTilesMatched()) {
+                    instructionText.setText("Congrats! You found all pairs.");
+                    colorGameActive = false;
+
+                    clickedTile.postDelayed(this::showIntro, 2000);
+                }
+            } else {
+                // No match - hide both tiles after delay
+                final int firstIndex = firstColorIndex;
+                final int secondIndex = index;
+                clickedTile.postDelayed(() -> {
+                    colorTiles.get(firstIndex).setBackgroundColor(Color.BLACK);
+                    colorTiles.get(secondIndex).setBackgroundColor(Color.BLACK);
+                    colorTiles.get(firstIndex).setTag("hidden");
+                    colorTiles.get(secondIndex).setTag("hidden");
+                }, 1000);
+            }
+            firstColorIndex = -1;
+        }
+    }
+
+    private boolean allColorTilesMatched() {
+        for (View tile : colorTiles) {
+            if (!"matched".equals(tile.getTag())) {
+                return false;
+            }
+        }
+        return true;
     }
 }

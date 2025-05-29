@@ -3,35 +3,82 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@android:color/white">
+    android:background="#FFA726">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="#6200EE"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <TextView
         android:id="@+id/instructionText"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remember the numbers!"
-        android:textSize="20sp"
         android:layout_below="@id/toolBar"
-        android:layout_marginTop="16dp"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/timerText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="10"
+        android:text="Choose a memory game below."
+        android:textColor="#000"
         android:textSize="18sp"
-        android:layout_below="@id/instructionText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp" />
+        android:gravity="center"
+        android:padding="16dp" />
 
-    <!-- The TextViews for circles are added programmatically -->
+    <!-- Game choice buttons container -->
+    <LinearLayout
+        android:id="@+id/gameChoiceLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/instructionText"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/numberGameButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🧠 Number Memory"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/colorGameButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🎨 Color Match"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Number game layout -->
+    <LinearLayout
+        android:id="@+id/numberGameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/instructionText"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:padding="16dp" />
+
+    <!-- Color game layout -->
+    <LinearLayout
+        android:id="@+id/colorGameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/instructionText"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:padding="16dp" />
 
 </RelativeLayout>
