@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">HealthPet</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="instruction">Instruction</string>
+    <string name="timer">Timer</string>
+    <string name="gyro_x_0_00">Gyro X: 0.00</string>
+    <string name="gyro_y_0_00">Gyro Y: 0.00</string>
+    <string name="gyro_z_0_00">Gyro Z: 0.00</string>
+    <string name="_4_7_8_breathing">4-7-8 Breathing</string>
+    <string name="info_4_7_8">Info 4-7-8</string>
+    <string name="alternate_nostril">Alternate Nostril</string>
+    <string name="info_alternate">Info Alternate</string>
+    <string name="start">START</string>
+    <string name="make_happy">Make Happy</string>
+    <string name="change_background">Change Background</string>
+    <string name="steps">🚶 Steps</string>
+    <string name="water">💧 Water</string>
+    <string name="rest">🛌 Rest</string>
+    <string name="memory">🧠 Memory</string>
+    <string name="balance">🧍 Balance</string>
+    <string name="breathe">🌬️ Breathe</string>
+    <string name="username">Username</string>
+    <string name="welcome_to_healthpet">Welcome to HealthPet</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="choose_a_memory_game_below">Choose a memory game below.</string>
+    <string name="number_memory">🧠 Number Memory</string>
+    <string name="color_match">🎨 Color Match</string>
+    <string name="child">Child</string>
+    <string name="adult">Adult</string>
+    <string name="senior">Senior</string>
+    <string name="height_cm">Height (cm)</string>
+    <string name="weight_kg">Weight (kg)</string>
+    <string name="sex">Sex:</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="do_you_have_any_respiratory_problems">Do you have any respiratory problems?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="submit">Submit</string>
+    <string name="rest_status_loading">Rest status loading...</string>
+    <string name="steps_remaining_10000">Steps remaining: 10000</string>
+    <string name="task_info">Task info</string>
 </resources>
