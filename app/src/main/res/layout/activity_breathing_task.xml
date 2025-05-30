@@ -44,7 +44,7 @@
                 android:id="@+id/btn478"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4-7-8 Breathing"
+                android:text="@string/_4_7_8_breathing"
                 android:backgroundTint="#4CAF50"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
@@ -55,7 +55,7 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:src="@android:drawable/ic_dialog_info"
-                android:contentDescription="Info 4-7-8" />
+                android:contentDescription="@string/info_4_7_8" />
         </LinearLayout>
 
         <LinearLayout
@@ -68,7 +68,7 @@
                 android:id="@+id/btnAlternate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Alternate Nostril"
+                android:text="@string/alternate_nostril"
                 android:backgroundTint="#2196F3"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
@@ -79,7 +79,7 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:src="@android:drawable/ic_dialog_info"
-                android:contentDescription="Info Alternate" />
+                android:contentDescription="@string/info_alternate" />
         </LinearLayout>
     </LinearLayout>
 
@@ -99,7 +99,7 @@
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="START"
+        android:text="@string/start"
         android:layout_below="@id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"

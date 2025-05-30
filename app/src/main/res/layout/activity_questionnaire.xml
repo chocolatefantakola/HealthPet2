@@ -48,14 +48,14 @@
                 android:id="@+id/ageGroup1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Child"
+                android:text="@string/child"
                 android:textColor="#0D47A1"/>
 
             <RadioButton
                 android:id="@+id/ageGroup2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Adult"
+                android:text="@string/adult"
                 android:textColor="#0D47A1"
                 android:layout_marginStart="16dp"/>
 
@@ -63,7 +63,7 @@
                 android:id="@+id/ageGroup3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Senior"
+                android:text="@string/senior"
                 android:textColor="#0D47A1"
                 android:layout_marginStart="16dp"/>
         </RadioGroup>
@@ -73,7 +73,7 @@
             android:id="@+id/heightInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Height (cm)"
+            android:hint="@string/height_cm"
             android:inputType="numberDecimal"
             android:padding="12dp"
             android:background="@android:drawable/edit_text"
@@ -84,7 +84,7 @@
             android:id="@+id/weightInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Weight (kg)"
+            android:hint="@string/weight_kg"
             android:inputType="numberDecimal"
             android:padding="12dp"
             android:background="@android:drawable/edit_text"
@@ -94,7 +94,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sex:"
+            android:text="@string/sex"
             android:textSize="16sp"
             android:textColor="#0D47A1"
             android:paddingBottom="8dp"/>
@@ -110,14 +110,14 @@
                 android:id="@+id/sexMale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Male"
+                android:text="@string/male"
                 android:textColor="#0D47A1"/>
 
             <RadioButton
                 android:id="@+id/sexFemale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Female"
+                android:text="@string/female"
                 android:textColor="#0D47A1"
                 android:layout_marginStart="16dp"/>
         </RadioGroup>
@@ -126,7 +126,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Do you have any respiratory problems?"
+            android:text="@string/do_you_have_any_respiratory_problems"
             android:textSize="16sp"
             android:textColor="#0D47A1"
             android:paddingBottom="8dp"/>
@@ -142,14 +142,14 @@
                 android:id="@+id/respiratoryYes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Yes"
+                android:text="@string/yes"
                 android:textColor="#0D47A1"/>
 
             <RadioButton
                 android:id="@+id/respiratoryNo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No"
+                android:text="@string/no"
                 android:textColor="#0D47A1"
                 android:layout_marginStart="16dp"/>
         </RadioGroup>
@@ -159,7 +159,7 @@
             android:id="@+id/submitQuestionnaireButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit"
+            android:text="@string/submit"
             android:backgroundTint="#0D47A1"
             android:textColor="#FFFFFF"
             android:padding="12dp"

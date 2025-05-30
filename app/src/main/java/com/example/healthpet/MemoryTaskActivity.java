@@ -77,7 +77,6 @@ public class MemoryTaskActivity extends AppCompatActivity {
         colorGameActive = false;
     }
 
-    // ------------------------ NUMBER GAME ------------------------
 
     private void startNumberGame() {
         gameChoiceLayout.setVisibility(View.GONE);
@@ -91,10 +90,8 @@ public class MemoryTaskActivity extends AppCompatActivity {
         numberGameActive = true;
         numberGameLayout.removeAllViews();
 
-        // Prepare numbers 1 to 5
         for (int i = 1; i <= 5; i++) numberSequence.add(i);
 
-        // Create buttons in order
         for (int num : numberSequence) {
             Button btn = createNumberButton(String.valueOf(num));
             btn.setTag(num);
@@ -102,7 +99,6 @@ public class MemoryTaskActivity extends AppCompatActivity {
             numberGameLayout.addView(btn);
         }
 
-        // Show numbers for 5 seconds, then shuffle with animation and hide numbers as '?'
         new CountDownTimer(5000, 1000) {
             public void onTick(long millisUntilFinished) { }
             public void onFinish() {
@@ -193,7 +189,6 @@ public class MemoryTaskActivity extends AppCompatActivity {
         }
     }
 
-    // ------------------------ COLOR GAME ------------------------
 
     private void startColorGame() {
         gameChoiceLayout.setVisibility(View.GONE);

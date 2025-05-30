@@ -1,4 +1,44 @@
 <resources>
     <string name="app_name">HealthPet</string>
-    <string name="welcome_back">Welcome back!</string>
+    <string name="welcome_back" translatable="false">Welcome back!</string>
+    <string name="instruction" translatable="false">Instruction</string>
+    <string name="timer" translatable="false">Timer</string>
+    <string name="gyro_x_0_00" translatable="false">Gyro X: 0.00</string>
+    <string name="gyro_y_0_00" translatable="false">Gyro Y: 0.00</string>
+    <string name="gyro_z_0_00" translatable="false">Gyro Z: 0.00</string>
+    <string name="_4_7_8_breathing" translatable="false">4-7-8 Breathing</string>
+    <string name="info_4_7_8" translatable="false">Info 4-7-8</string>
+    <string name="alternate_nostril" translatable="false">Alternate Nostril</string>
+    <string name="info_alternate" translatable="false">Info Alternate</string>
+    <string name="start" translatable="false">START</string>
+    <string name="make_happy" translatable="false">Make Happy</string>
+    <string name="change_background" translatable="false">Change Background</string>
+    <string name="steps" translatable="false">🚶 Steps</string>
+    <string name="water" translatable="false">💧 Water</string>
+    <string name="rest" translatable="false">🛌 Rest</string>
+    <string name="memory" translatable="false">🧠 Memory</string>
+    <string name="balance" translatable="false">🧍 Balance</string>
+    <string name="breathe" translatable="false">🌬️ Breathe</string>
+    <string name="username" translatable="false">Username</string>
+    <string name="welcome_to_healthpet" translatable="false">Welcome to HealthPet</string>
+    <string name="password" translatable="false">Password</string>
+    <string name="login" translatable="false">Login</string>
+    <string name="choose_a_memory_game_below" translatable="false">Choose a memory game below.</string>
+    <string name="number_memory" translatable="false">🧠 Number Memory</string>
+    <string name="color_match" translatable="false">🎨 Color Match</string>
+    <string name="child" translatable="false">Child</string>
+    <string name="adult" translatable="false">Adult</string>
+    <string name="senior" translatable="false">Senior</string>
+    <string name="height_cm" translatable="false">Height (cm)</string>
+    <string name="weight_kg" translatable="false">Weight (kg)</string>
+    <string name="sex" translatable="false">Sex:</string>
+    <string name="male" translatable="false">Male</string>
+    <string name="female" translatable="false">Female</string>
+    <string name="do_you_have_any_respiratory_problems" translatable="false">Do you have any respiratory problems?</string>
+    <string name="yes" translatable="false">Yes</string>
+    <string name="no" translatable="false">No</string>
+    <string name="submit" translatable="false">Submit</string>
+    <string name="rest_status_loading" translatable="false">Rest status loading...</string>
+    <string name="steps_remaining_10000" translatable="false">Steps remaining: 10000</string>
+    <string name="task_info" translatable="false">Task info</string>
 </resources>

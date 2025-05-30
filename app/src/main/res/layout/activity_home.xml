@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Make Happy"
+                android:text="@string/make_happy"
                 android:backgroundTint="@color/blue"
                 android:textColor="@android:color/white" />
 
@@ -48,13 +48,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="Change Background"
+                android:text="@string/change_background"
                 android:backgroundTint="@color/blue"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
 
-        <!-- Placeholder Space for Koala --> <!-- geändert -->
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="500dp"
@@ -127,7 +127,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/blue"
-                android:text="🚶 Steps"
+                android:text="@string/steps"
                 android:textColor="@android:color/white" />
 
             <Button
@@ -137,7 +137,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/teal_200"
-                android:text="💧 Water"
+                android:text="@string/water"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
@@ -156,7 +156,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/orange"
-                android:text="🛌 Rest"
+                android:text="@string/rest"
                 android:textColor="@android:color/white" />
 
             <Button
@@ -166,7 +166,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/purple_500"
-                android:text="🧠 Memory"
+                android:text="@string/memory"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
@@ -184,7 +184,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/red"
-                android:text="🧍 Balance"
+                android:text="@string/balance"
                 android:textColor="@android:color/white" />
 
 
@@ -195,7 +195,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/yellow"
-                android:text="🌬️ Breathe"
+                android:text="@string/breathe"
                 android:textColor="@android:color/black" />
         </LinearLayout>
 

@@ -31,13 +31,10 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            // For demo: accept any username/password
-            // TODO: Implement real auth here
 
-            // On successful login, open QuestionnaireActivity
             Intent intent = new Intent(LoginActivity.this, QuestionnaireActivity.class);
             startActivity(intent);
-            finish();  // prevent going back to login
+            finish();
         });
     }
 }

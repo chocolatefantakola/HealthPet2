@@ -36,11 +36,9 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 String height = heightInput.getText().toString().trim();
                 String weight = weightInput.getText().toString().trim();
 
-                // You can save or use this data as needed
 
                 Toast.makeText(this, "Questionnaire submitted!", Toast.LENGTH_SHORT).show();
 
-                // Navigate to HomeActivity after submission
                 Intent intent = new Intent(QuestionnaireActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();

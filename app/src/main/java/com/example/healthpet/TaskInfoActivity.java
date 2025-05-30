@@ -16,10 +16,8 @@ public class TaskInfoActivity extends AppCompatActivity {
 
         taskInfoTextView = findViewById(R.id.taskInfoTextView);
 
-        // Get task name from intent extras
         String taskName = getIntent().getStringExtra("TASK_NAME");
 
-        // Simple placeholder info for now
         String info = "Information about " + taskName + " will be shown here.";
 
         taskInfoTextView.setText(info);
