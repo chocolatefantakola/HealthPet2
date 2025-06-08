@@ -33,6 +33,9 @@ android {
 
 dependencies {
 
+
+    implementation("androidx.room:room-runtime:2.7.1")
+    annotationProcessor("androidx.room:room-compiler:2.7.1")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -41,5 +44,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.airbnb.android:lottie:6.4.0")
+1
+
 
 }

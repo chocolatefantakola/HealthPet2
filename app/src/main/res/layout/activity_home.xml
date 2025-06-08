@@ -198,7 +198,17 @@
                 android:text="@string/breathe"
                 android:textColor="@android:color/black" />
         </LinearLayout>
+        <Button
+            android:id="@+id/logbookButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📘 Logbuch öffnen"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/blue"
+            android:layout_marginTop="16dp" />
 
     </LinearLayout>
+
+
 
 </ScrollView>

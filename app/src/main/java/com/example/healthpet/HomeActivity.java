@@ -9,12 +9,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import androidx.room.Room;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -27,6 +29,8 @@ public class HomeActivity extends AppCompatActivity {
     private Button makeHappyButton;
 
     private Button changeBackgroundButton;
+
+    private Button logbookButton;
     private int currentBackground = 1;
 
     private LottieAnimationView[] koalas;
@@ -36,6 +40,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "WaterPrefs";
     private static final String KEY_LAST_WATER_TIME = "lastWaterTime";
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         breathingTaskButton = findViewById(R.id.breathingTaskButton);
         makeHappyButton = findViewById(R.id.makeHappyButton);
         changeBackgroundButton = findViewById(R.id.change_background);
+        logbookButton= findViewById(R.id.logbookButton);
 
         stepGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
         waterGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
@@ -60,6 +69,14 @@ public class HomeActivity extends AppCompatActivity {
         memoryTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
         balanceTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
         breathingTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
+
+        Button logbookButton = findViewById(R.id.logbookButton);
+
+
+        logbookButton.setOnClickListener(v -> {
+            startActivity(new Intent(HomeActivity.this, LogbookActivity.class));
+        });
+
 
         stepGoalButton.setOnClickListener(v -> {
             // TODO: Start step goal activity
@@ -125,6 +142,11 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, "task-database").build();
+        TaskDao taskDao = db.taskDao();
+
+
     }
 
     private void handleWaterGoalClick() {
@@ -148,6 +170,25 @@ public class HomeActivity extends AppCompatActivity {
                     .setMessage("Have you really drunk all your water today?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         prefs.edit().putLong(KEY_LAST_WATER_TIME, now).apply();
+
+                        if (currentLevel > 0) {
+                            currentLevel--;
+                            showKoala(currentLevel);
+                        }
+
+                        //speichern in der Room Database
+
+                        new Thread(() -> {
+                            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                                    AppDatabase.class, "task-database").build();
+                            db.taskDao().insert(new TaskCompletion("waterGoal", now));
+
+
+                        }).start();
+
+
+
+
                         new androidx.appcompat.app.AlertDialog.Builder(HomeActivity.this)
                                 .setTitle("🎉 Hydration Success!")
                                 .setMessage("Great! You’ve reached your daily water goal. Stay hydrated and keep it up!")
@@ -166,8 +207,8 @@ public class HomeActivity extends AppCompatActivity {
     private long getNext7AM(long fromTimeMillis) {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(fromTimeMillis);
-        cal.add(Calendar.DATE, 1);
-        cal.set(Calendar.HOUR_OF_DAY, 7);
+        cal.add(Calendar.DATE, 0);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
@@ -193,6 +234,6 @@ public class HomeActivity extends AppCompatActivity {
                 scheduleSadness();
             }
         };
-        handler.postDelayed(sadnessRunnable, 5000);
+        handler.postDelayed(sadnessRunnable, 20000);
     }
 }
