@@ -31,7 +31,7 @@
             android:id="@+id/instructionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/instruction"
+            android:text="Place your phone on your hand, stretch your arm and lift your right leg. Hold the ball inside the circle."
             android:textStyle="bold"
             android:textSize="22sp"
             android:layout_marginBottom="20dp"
@@ -41,33 +41,24 @@
             android:id="@+id/timerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/timer"
+            android:text="Press start to begin"
             android:textSize="48sp"
             android:textStyle="bold"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center" />
 
-        <TextView
-            android:id="@+id/gyroX"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/gyro_x_0_00"
-            android:textSize="18sp" />
+        <com.example.healthpet.BalanceView
+            android:id="@+id/balanceView"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"/>
 
-        <TextView
-            android:id="@+id/gyroY"
+        <Button
+            android:id="@+id/startButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/gyro_y_0_00"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/gyroZ"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/gyro_z_0_00"
-            android:textSize="18sp" />
+            android:text="I'm Ready!"/>
 
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
