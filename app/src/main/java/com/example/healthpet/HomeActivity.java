@@ -79,7 +79,8 @@ public class HomeActivity extends AppCompatActivity {
 
 
         stepGoalButton.setOnClickListener(v -> {
-            // TODO: Start step goal activity
+            Intent intent = new Intent(HomeActivity.this, StepGoalActivity.class);
+            startActivity(intent);
         });
 
         waterGoalButton.setOnClickListener(v -> handleWaterGoalClick());

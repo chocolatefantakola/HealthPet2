@@ -36,6 +36,8 @@
         <activity
             android:name=".BalanceTaskActivity"
             android:exported="false" />
+        <activity android:name=".StepGoalActivity"
+            android:exported ="false"/>
     </application>
 
 </manifest>

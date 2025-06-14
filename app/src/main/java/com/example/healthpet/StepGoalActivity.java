@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,17 +20,13 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
 
     private static final int STEP_GOAL = 10000;
     private SensorManager sensorManager;
-    private Sensor stepCounterSensor;
+    private Sensor accelerometerSensor;
 
     private TextView stepsTextView, stepsRemainingTextView;
     private ProgressBar stepsProgressBar;
 
     private SharedPreferences prefs;
 
-    // To store baseline step count when activity starts (to handle step counter sensor that counts steps since device reboot)
-    private int initialStepCount = -1;
-
-    // For daily reset at 7:00
     private static final String PREFS_NAME = "StepGoalPrefs";
     private static final String PREF_LAST_RESET_DAY = "lastResetDay";
     private static final String PREF_STEPS_TODAY = "stepsToday";
@@ -45,6 +42,10 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
         }
     };
 
+    private static final float THRESHOLD = 11.0f;  // Schwellenwert für Erkennung
+    private static final int STEP_DELAY_MS = 500;  // min. Zeit zwischen Schritten in ms
+    private long lastStepTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +57,7 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
-            stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
 
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -70,10 +71,10 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
     @Override
     protected void onResume() {
         super.onResume();
-        if (stepCounterSensor != null) {
-            sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if (accelerometerSensor != null) {
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         } else {
-            Toast.makeText(this, "Step Counter sensor not available", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Accelerometer not available", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -87,21 +88,25 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (initialStepCount < 0) {
-            initialStepCount = (int) event.values[0];  // baseline steps since reboot
-        }
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
 
-        int totalStepsSinceReboot = (int) event.values[0];
-        int stepsSinceStart = totalStepsSinceReboot - initialStepCount;
+        double magnitude = Math.sqrt(x * x + y * y + z * z);
+        long currentTime = System.currentTimeMillis();
 
-        // Update today's steps counting from 7:00 AM reset
-        stepsToday = stepsSinceStart;
-        if (stepsToday > STEP_GOAL) stepsToday = STEP_GOAL;  // clamp max
+        Log.d("SensorData", "X: " + x + " Y: " + y + " Z: " + z + " Magnitude: " + magnitude);
 
-        updateUI();
+        if (magnitude > THRESHOLD) {
+            if (currentTime - lastStepTime > STEP_DELAY_MS) {
+                stepsToday++;
+                lastStepTime = currentTime;
+                updateUI();
 
-        if (stepsToday >= STEP_GOAL) {
-            Toast.makeText(this, "🎉 Congratulations! Step goal reached! 🎉", Toast.LENGTH_LONG).show();
+                if (stepsToday >= STEP_GOAL) {
+                    Toast.makeText(this, "\uD83C\uDF89 Congratulations! Step goal reached! \uD83C\uDF89", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 
@@ -117,18 +122,16 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
         stepsRemainingTextView.setText("Steps remaining: " + stepsLeft);
 
         int progress = (int) ((stepsToday / (float) STEP_GOAL) * 100);
+        if (progress > 100) progress = 100;
         stepsProgressBar.setProgress(progress);
     }
 
     private void checkAndResetDailySteps() {
         Calendar now = Calendar.getInstance();
         int today = now.get(Calendar.DAY_OF_YEAR);
-
         int lastResetDay = prefs.getInt(PREF_LAST_RESET_DAY, -1);
 
         if (lastResetDay != today && now.get(Calendar.HOUR_OF_DAY) >= 7) {
-            // Reset step count daily at 7:00 AM
-            initialStepCount = -1;
             stepsToday = 0;
             saveData();
 
@@ -142,13 +145,11 @@ public class StepGoalActivity extends AppCompatActivity implements SensorEventLi
 
     private void loadSavedData() {
         stepsToday = prefs.getInt(PREF_STEPS_TODAY, 0);
-        initialStepCount = prefs.getInt("initialStepCount", -1);
     }
 
     private void saveData() {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(PREF_STEPS_TODAY, stepsToday);
-        editor.putInt("initialStepCount", initialStepCount);
         editor.apply();
     }
 }
