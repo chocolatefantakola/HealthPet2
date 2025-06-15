@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.healthpet">
 
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -38,6 +41,13 @@
             android:exported="false" />
         <activity android:name=".StepGoalActivity"
             android:exported ="false"/>
+        <service
+            android:name=".StepCounterService"
+            android:enabled="true"
+            android:exported="false"/>
+
+
     </application>
+
 
 </manifest>
