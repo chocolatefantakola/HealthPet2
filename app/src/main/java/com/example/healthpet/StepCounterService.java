@@ -11,94 +11,63 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import java.util.Calendar;
+
 
 public class StepCounterService extends Service implements SensorEventListener {
 
-    private static final String CHANNEL_ID = "StepCounterChannel";
-    private static final int STEP_GOAL = 10000;
-    private static final String PREFS_NAME = "StepGoalPrefs";
-    private static final String PREF_LAST_RESET_DAY = "lastResetDay";
-    private static final String PREF_STEPS_TODAY = "stepsToday";
-
     private SensorManager sensorManager;
-    private Sensor accelerometerSensor;
-    private SharedPreferences prefs;
-    private int stepsToday;
+    private Sensor stepCounterSensor;
 
-    private Handler resetHandler = new Handler();
-    private Runnable resetRunnable;
-
-    private static final float THRESHOLD = 11.0f;
-    private static final int STEP_DELAY_MS = 500;
-    private long lastStepTime = 0;
+    private float initialStepCount = -1;
+    private static final int dailyStepGoal = 10000;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannel();
-        startForeground(1, getNotification());
-
-        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        stepsToday = prefs.getInt(PREF_STEPS_TODAY, 0);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
-            accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         }
 
-        resetRunnable = () -> {
-            checkAndResetDailySteps();
-            resetHandler.postDelayed(resetRunnable, 60 * 1000);
-        };
-        resetHandler.post(resetRunnable);
+        if (stepCounterSensor != null) {
+            sensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
+        startForegroundService();
+        loadInitialStepCount();
     }
 
-    private Notification getNotification() {
-        return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("HealthPet Schrittzähler")
-                .setContentText("Schritte werden gezählt...")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setOngoing(true)
-                .build();
-    }
+    private void startForegroundService() {
+        String channelId = "StepCounterChannel";
+        String channelName = "Step Counter";
 
-    private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Step Counter Channel",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            NotificationManager manager = getSystemService(NotificationManager.class);
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
+            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (manager != null) {
-                manager.createNotificationChannel(serviceChannel);
+                manager.createNotificationChannel(channel);
             }
         }
+
+        Notification notification = new NotificationCompat.Builder(this, channelId)
+                .setContentTitle("Step Counter")
+                .setContentText("Counting your steps...")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .build();
+
+        startForeground(1, notification);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         sensorManager.unregisterListener(this);
-        resetHandler.removeCallbacks(resetRunnable);
-        saveData();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
-    }
-
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -106,41 +75,35 @@ public class StepCounterService extends Service implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
+        float totalStepsSinceReboot = event.values[0];
 
-        double magnitude = Math.sqrt(x * x + y * y + z * z);
-        long currentTime = System.currentTimeMillis();
-
-        if (magnitude > THRESHOLD) {
-            if (currentTime - lastStepTime > STEP_DELAY_MS) {
-                stepsToday++;
-                lastStepTime = currentTime;
-                saveData();
-                Log.d("StepCounterService", "Steps: " + stepsToday);
-            }
+        if (initialStepCount < 0) {
+            initialStepCount = totalStepsSinceReboot;
+            saveInitialStepCount(initialStepCount);
         }
+
+        int stepsToday = (int)(totalStepsSinceReboot - initialStepCount);
+        if (stepsToday < 0) stepsToday = 0;
+
+        saveStepsToday(stepsToday);
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) { }
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-    private void checkAndResetDailySteps() {
-        Calendar now = Calendar.getInstance();
-        int today = now.get(Calendar.DAY_OF_YEAR);
-        int lastResetDay = prefs.getInt(PREF_LAST_RESET_DAY, -1);
-
-        if (lastResetDay != today && now.get(Calendar.HOUR_OF_DAY) >= 7) {
-            stepsToday = 0;
-            saveData();
-            prefs.edit().putInt(PREF_LAST_RESET_DAY, today).apply();
-        }
+    // Speicher Methoden
+    private void saveInitialStepCount(float value) {
+        SharedPreferences prefs = getSharedPreferences("stepPrefs", MODE_PRIVATE);
+        prefs.edit().putFloat("initialStepCount", value).apply();
     }
 
-    private void saveData() {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(PREF_STEPS_TODAY, stepsToday);
-        editor.apply();
+    private void saveStepsToday(int stepsToday) {
+        SharedPreferences prefs = getSharedPreferences("stepPrefs", MODE_PRIVATE);
+        prefs.edit().putInt("stepsToday", stepsToday).apply();
+    }
+
+    private void loadInitialStepCount() {
+        SharedPreferences prefs = getSharedPreferences("stepPrefs", MODE_PRIVATE);
+        initialStepCount = prefs.getFloat("initialStepCount", -1);
     }
 }

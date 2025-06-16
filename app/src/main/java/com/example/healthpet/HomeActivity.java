@@ -1,5 +1,9 @@
 package com.example.healthpet;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -10,7 +14,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.room.Room;
+
 import com.airbnb.lottie.LottieAnimationView;
 import java.util.Calendar;
 
@@ -31,6 +40,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "WaterPrefs";
     private static final String KEY_LAST_WATER_TIME = "lastWaterTime";
+
+    private static final int REQUEST_ACTIVITY_RECOGNITION = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +78,8 @@ public class HomeActivity extends AppCompatActivity {
         balanceTaskButton.setOnClickListener(v -> startActivity(new Intent(this, BalanceTaskActivity.class)));
         breathingTaskButton.setOnClickListener(v -> startActivity(new Intent(this, BreathingTaskActivity.class)));
 
-        // Schrittzähler-Service starten
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(new Intent(this, StepCounterService.class));
-        } else {
-            startService(new Intent(this, StepCounterService.class));
-        }
+        checkActivityRecognitionPermission();
+
 
         // Water Goal
         waterGoalButton.setOnClickListener(v -> handleWaterGoalClick());
@@ -132,6 +140,13 @@ public class HomeActivity extends AppCompatActivity {
                         prefs.edit().putLong(KEY_LAST_WATER_TIME, now).apply();
                         if (currentLevel > 0) currentLevel--;
                         showKoala(currentLevel);
+
+                        new Thread(() -> {
+                            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                                    AppDatabase.class, "task-database").build();
+                            db.taskDao().insert(new TaskCompletion("waterGoal", now));
+                        }).start();
+
                         new androidx.appcompat.app.AlertDialog.Builder(this)
                                 .setTitle("🎉 Hydration Success!")
                                 .setMessage("Great! You’ve reached your daily water goal. Stay hydrated and keep it up!")
@@ -170,4 +185,40 @@ public class HomeActivity extends AppCompatActivity {
         };
         handler.postDelayed(sadnessRunnable, 20000);
     }
+    private void checkActivityRecognitionPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // Android 10+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, REQUEST_ACTIVITY_RECOGNITION);
+            } else {
+                startStepCounterService();
+            }
+        } else {
+            startStepCounterService();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_ACTIVITY_RECOGNITION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startStepCounterService();
+            } else {
+                Toast.makeText(this, "Permission denied: Step counter will not work properly.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+    }
+
+    private void startStepCounterService() {
+        Intent serviceIntent = new Intent(this, StepCounterService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+    }
+
+
+
 }
