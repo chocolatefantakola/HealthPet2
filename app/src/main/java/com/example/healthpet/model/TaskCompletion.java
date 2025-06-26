@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.model;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -15,3 +15,4 @@ public class TaskCompletion {
         this.completionTime = completionTime;
     }
 }
+

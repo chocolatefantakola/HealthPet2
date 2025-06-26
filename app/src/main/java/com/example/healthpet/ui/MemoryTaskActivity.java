@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.example.healthpet.R;
 
 import java.util.ArrayList;
 import java.util.Collections;

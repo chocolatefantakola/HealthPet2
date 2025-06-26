@@ -47,7 +47,7 @@
             android:layout_marginBottom="20dp"
             android:gravity="center" />
 
-        <com.example.healthpet.BalanceView
+        <com.example.healthpet.ui.BalanceView
             android:id="@+id/balanceView"
             android:layout_width="300dp"
             android:layout_height="300dp"

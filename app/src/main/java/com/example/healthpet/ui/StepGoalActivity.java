@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.healthpet.R;
+import com.example.healthpet.receiver.ResetReceiver;
 
 import java.util.Calendar;
 

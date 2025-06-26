@@ -1,8 +1,7 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -18,7 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.room.Room;
 
-import java.util.Calendar;
+import com.example.healthpet.R;
+import com.example.healthpet.model.TaskCompletion;
+import com.example.healthpet.data.AppDatabase;
 
 public class BalanceTaskActivity extends AppCompatActivity implements SensorEventListener {
 

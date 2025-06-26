@@ -1,10 +1,14 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
+
+import com.example.healthpet.R;
+import com.example.healthpet.model.TaskCompletion;
+import com.example.healthpet.data.AppDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

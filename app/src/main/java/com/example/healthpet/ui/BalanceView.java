@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;

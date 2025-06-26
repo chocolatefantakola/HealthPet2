@@ -17,10 +17,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HealthPet">
         <activity
-            android:name=".LogbookActivity"
+            android:name=".ui.LogbookActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,29 +29,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".QuestionnaireActivity"
+            android:name=".ui.QuestionnaireActivity"
             android:exported="false" />
         <activity
-            android:name=".BreathingTaskActivity"
+            android:name=".ui.BreathingTaskActivity"
             android:exported="false" />
         <activity
-            android:name=".MemoryTaskActivity"
+            android:name=".ui.MemoryTaskActivity"
             android:exported="false" />
         <activity
-            android:name=".BalanceTaskActivity"
+            android:name=".ui.BalanceTaskActivity"
             android:exported="false" />
-        <activity android:name=".StepGoalActivity"
+        <activity android:name=".ui.StepGoalActivity"
             android:exported ="false"/>
         <service
-            android:name=".StepCounterService"
+            android:name=".service.StepCounterService"
             android:exported="false" />
-        <receiver android:name=".ResetReceiver" />
+        <receiver android:name=".receiver.ResetReceiver" />
 
 
-        <receiver android:name=".BootReceiver"
+        <receiver android:name=".receiver.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

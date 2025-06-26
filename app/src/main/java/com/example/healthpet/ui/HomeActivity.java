@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -11,16 +11,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.room.Room;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.healthpet.R;
+import com.example.healthpet.service.StepCounterService;
+import com.example.healthpet.model.TaskCompletion;
+import com.example.healthpet.data.AppDatabase;
+
 import java.util.Calendar;
 
 public class HomeActivity extends AppCompatActivity {

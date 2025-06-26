@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.ui;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.example.healthpet.R;
 
 public class BreathingTaskActivity extends AppCompatActivity {
 

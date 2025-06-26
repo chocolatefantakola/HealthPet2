@@ -1,4 +1,4 @@
-package com.example.healthpet;
+package com.example.healthpet.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.IBinder;
 import androidx.core.app.NotificationCompat;
 
+import com.example.healthpet.R;
 
 
 public class StepCounterService extends Service implements SensorEventListener {
