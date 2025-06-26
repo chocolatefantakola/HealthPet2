@@ -143,7 +143,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         long now = System.currentTimeMillis();
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "task-database").build();
-            db.taskDao().insert(new TaskCompletion("balanceTask", now));
+            db.taskDao().insert(new TaskCompletion("Balance", now));
         }).start();
 
         new AlertDialog.Builder(this)

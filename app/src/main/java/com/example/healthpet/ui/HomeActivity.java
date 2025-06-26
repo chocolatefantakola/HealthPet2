@@ -146,7 +146,7 @@ public class HomeActivity extends AppCompatActivity {
 
                         new Thread(() -> {
                             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                                    AppDatabase.class, "task-database").build();
+                                    AppDatabase.class, "task-database").fallbackToDestructiveMigration().build();
                             db.taskDao().insert(new TaskCompletion("waterGoal", now));
                         }).start();
 
