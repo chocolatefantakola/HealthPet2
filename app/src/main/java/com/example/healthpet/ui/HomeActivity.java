@@ -23,6 +23,7 @@ import com.example.healthpet.R;
 import com.example.healthpet.service.StepCounterService;
 import com.example.healthpet.model.TaskCompletion;
 import com.example.healthpet.data.AppDatabase;
+import com.example.healthpet.util.DailyResetManager;
 
 import java.util.Calendar;
 
@@ -52,6 +53,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        DailyResetManager.checkAndResetIfNeeded(this);
+
         // Views
         rootScrollView = findViewById(R.id.rootScrollView);
         welcomeTextView = findViewById(R.id.welcomeTextView);
@@ -80,12 +83,13 @@ public class HomeActivity extends AppCompatActivity {
         memoryTaskButton.setOnClickListener(v -> startActivity(new Intent(this, MemoryTaskActivity.class)));
         balanceTaskButton.setOnClickListener(v -> startActivity(new Intent(this, BalanceTaskActivity.class)));
         breathingTaskButton.setOnClickListener(v -> startActivity(new Intent(this, BreathingTaskActivity.class)));
+        waterGoalButton.setOnClickListener(v -> startActivity(new Intent(this, WaterGoalActivity.class)));
 
         checkActivityRecognitionPermission();
 
 
-        // Water Goal
-        waterGoalButton.setOnClickListener(v -> handleWaterGoalClick());
+
+
 
         // Koalas
         koalas = new LottieAnimationView[]{
@@ -120,56 +124,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void handleWaterGoalClick() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        long lastCompleted = prefs.getLong(KEY_LAST_WATER_TIME, 0);
-        long now = System.currentTimeMillis();
 
-        if (now < getNext7AM(lastCompleted)) {
-            long millisLeft = getNext7AM(lastCompleted) - now;
-            long hours = millisLeft / (1000 * 60 * 60);
-            long minutes = (millisLeft / (1000 * 60)) % 60;
-
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("🚫 Task Locked")
-                    .setMessage("Water task will be available in " + hours + "h " + minutes + "m.")
-                    .setPositiveButton("OK", null)
-                    .show();
-        } else {
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("💧 Daily Water Check")
-                    .setMessage("Have you really drunk all your water today?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        prefs.edit().putLong(KEY_LAST_WATER_TIME, now).apply();
-                        if (currentLevel > 0) currentLevel--;
-                        showKoala(currentLevel);
-
-                        new Thread(() -> {
-                            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                                    AppDatabase.class, "task-database").fallbackToDestructiveMigration().build();
-                            db.taskDao().insert(new TaskCompletion("waterGoal", now));
-                        }).start();
-
-                        new androidx.appcompat.app.AlertDialog.Builder(this)
-                                .setTitle("🎉 Hydration Success!")
-                                .setMessage("Great! You’ve reached your daily water goal. Stay hydrated and keep it up!")
-                                .setPositiveButton("OK", null)
-                                .show();
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
-        }
-    }
-
-    private long getNext7AM(long fromTimeMillis) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(fromTimeMillis);
-        cal.set(Calendar.HOUR_OF_DAY, 7);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTimeInMillis();
-    }
 
     private void showKoala(int level) {
         for (int i = 0; i < koalas.length; i++) {

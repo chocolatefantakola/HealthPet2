@@ -45,6 +45,8 @@
             android:exported="false" />
         <activity android:name=".ui.StepGoalActivity"
             android:exported ="false"/>
+        <activity android:name=".ui.WaterGoalActivity"
+            android:exported="false"/>
         <service
             android:name=".service.StepCounterService"
             android:exported="false" />
