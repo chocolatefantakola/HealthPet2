@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,10 +27,12 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
 
-    private TextView instructionText;
+
     private TextView timerText;
     private Button startButton;
     private BalanceView balanceView;
+    private TextView mainText;
+    private ImageView infoIcon;
 
     private enum Stage {
         READY, COUNTDOWN, RIGHT_LEG, REST, LEFT_LEG, DONE
@@ -49,15 +52,18 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance_task);
 
-        Toolbar toolbar = findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
+        mainText = findViewById(R.id.mainText);
+        infoIcon = findViewById(R.id.infoIcon);
+
+        infoIcon.setOnClickListener(v -> showInstructionDialog());
+
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Balance Task");
         }
 
-        instructionText = findViewById(R.id.instructionText);
+
         timerText = findViewById(R.id.timerText);
         startButton = findViewById(R.id.startButton);
         balanceView = findViewById(R.id.balanceView);
@@ -81,19 +87,33 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
     }
 
     private void startSession() {
-        currentStage = Stage.COUNTDOWN;
+        infoIcon.setVisibility(View.GONE);
+        mainText.setVisibility(View.GONE);
         startButton.setVisibility(View.GONE);
-        instructionText.setText("Place your phone on your hand, stretch your arm and lift your right leg. Hold the ball inside the circle.");
-        new CountDownTimer(3000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                timerText.setText("Starting in: " + (millisUntilFinished / 1000));
-            }
-            public void onFinish() {
-                currentStage = Stage.RIGHT_LEG;
-                startBalanceTimer();
-            }
-        }.start();
+        currentStage = (currentStage == Stage.REST) ? Stage.LEFT_LEG : Stage.COUNTDOWN;
+
+        if (currentStage == Stage.LEFT_LEG) {
+            startBalanceTimer();
+        } else {
+            // Countdown für das rechte Bein
+            new CountDownTimer(4000, 1000) {  // 3,2,1,Go!
+                public void onTick(long millisUntilFinished) {
+                    int secondsLeft = (int) (millisUntilFinished / 1000);
+                    if (secondsLeft > 0) {
+                        timerText.setText(String.valueOf(secondsLeft));
+                    } else {
+                        timerText.setText("Go!");
+                    }
+                }
+                public void onFinish() {
+                    currentStage = Stage.RIGHT_LEG;
+                    startBalanceTimer();
+                }
+            }.start();
+        }
     }
+
+
 
     private void startBalanceTimer() {
         isBalancing = true;
@@ -106,7 +126,8 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                 isBalancing = false;
                 if (currentStage == Stage.RIGHT_LEG) {
                     currentStage = Stage.REST;
-                    startRest();
+                    // Jetzt Pause – warte bis der User wieder startet
+                    showRestDialog("Great! Now take a break and press Start when you're ready for the left leg.");
                 } else if (currentStage == Stage.LEFT_LEG) {
                     currentStage = Stage.DONE;
                     finishSuccess();
@@ -115,15 +136,32 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }.start();
     }
 
+    private void showRestDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Rest")
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    startButton.setVisibility(View.VISIBLE);
+                    mainText.setVisibility(View.VISIBLE);
+                    infoIcon.setVisibility(View.VISIBLE);
+                    mainText.setText("Press Start for the left leg when you are ready.");
+                })
+                .show();
+    }
+
+
+
+
     private void startRest() {
-        instructionText.setText("Rest");
         new CountDownTimer(3000, 1000) {
             public void onTick(long millisUntilFinished) {
                 timerText.setText(String.valueOf(millisUntilFinished / 1000));
             }
             public void onFinish() {
                 currentStage = Stage.LEFT_LEG;
-                instructionText.setText("Place your phone on your hand, stretch your arm and lift your left leg. Hold the ball inside the circle.");
+                // Zeig den Dialog zur Info, wenn du magst
+                showInstructionDialogForLeftLeg();
+
                 new CountDownTimer(3000, 1000) {
                     public void onTick(long millisUntilFinished) {
                         timerText.setText("Starting in: " + (millisUntilFinished / 1000));
@@ -136,8 +174,17 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }.start();
     }
 
+    private void showInstructionDialogForLeftLeg() {
+        new AlertDialog.Builder(this)
+                .setTitle("Instructions")
+                .setMessage("Place your phone on your upward-facing palm, stretch your arm, and lift your left leg. Keep the ball inside the circle.")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+
+
     private void finishSuccess() {
-        instructionText.setText("Well done!");
         timerText.setText("");
 
         long now = System.currentTimeMillis();
@@ -158,6 +205,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                 .show();
     }
 
+
     private void showFailDialog() {
         isBalancing = false;
         if (balanceTimer != null) balanceTimer.cancel();
@@ -167,7 +215,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                     .setTitle("Oops!")
                     .setMessage("You failed. Try again?")
                     .setPositiveButton("Try Again", (dialog, which) -> restartSession())
-                    .setNegativeButton("Ok :(", (dialog, which) -> finish())
+                    .setNegativeButton("NO :(", (dialog, which) -> finish())
                     .setCancelable(false)
                     .show();
         });
@@ -175,10 +223,13 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
 
     private void restartSession() {
         currentStage = Stage.READY;
-        instructionText.setText("Place your phone on your hand, stretch your arm and lift your right leg. Hold the ball inside the circle.");
+        mainText.setVisibility(View.VISIBLE);
+        infoIcon.setVisibility(View.VISIBLE);
         startButton.setVisibility(View.VISIBLE);
-        timerText.setText("Press start to begin");
+        timerText.setText("");
     }
+
+
 
     @Override
     protected void onResume() {
@@ -214,4 +265,15 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         finish();
         return true;
     }
+
+
+    private void showInstructionDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Instructions")
+                .setMessage("Place your phone on your upward-facing palm, stretch your arm, and lift your right leg. Keep the ball inside the circle.")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+
 }

@@ -21,12 +21,11 @@ public class BalanceView extends View {
 
     private void init() {
         circlePaint = new Paint();
-        circlePaint.setColor(Color.LTGRAY);
-        circlePaint.setStyle(Paint.Style.STROKE);
-        circlePaint.setStrokeWidth(8);
+        circlePaint.setColor(Color.parseColor("#000E47"));
+        circlePaint.setStyle(Paint.Style.FILL);
 
         ballPaint = new Paint();
-        ballPaint.setColor(Color.BLUE);
+        ballPaint.setColor(Color.BLACK);
         ballPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -37,7 +36,6 @@ public class BalanceView extends View {
         float targetX = centerX - x * scale;
         float targetY = centerY + y * scale;
 
-        // Sanfte Bewegung mit Trägheit
         float smoothing = 0.1f;
         ballX = ballX + (targetX - ballX) * smoothing;
         ballY = ballY + (targetY - ballY) * smoothing;
@@ -45,48 +43,38 @@ public class BalanceView extends View {
         float distance = (float) Math.sqrt(Math.pow(ballX - centerX, 2) + Math.pow(ballY - centerY, 2));
 
         if (distance <= radius) {
-            ballPaint.setColor(Color.GREEN);
+            ballPaint.setColor(Color.BLACK);
         } else {
             ballPaint.setColor(Color.RED);
-            if (failListener!=null){
-            failListener.onBalanceFail();
+            if (failListener != null) {
+                failListener.onBalanceFail();
             }
-
         }
-
 
         invalidate();
     }
-
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         centerX = w / 2f;
         centerY = h / 2f;
-        radius = Math.min(w, h) / 3f;
+        radius = Math.min(w, h) / 2.2f;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // Zielkreis
         canvas.drawCircle(centerX, centerY, radius, circlePaint);
-        // Kugel
         canvas.drawCircle(ballX, ballY, 40, ballPaint);
     }
-    public float getRadius() {
-        return radius;
-    }
-    public float getDistanceToCenter() {
-        return (float) Math.sqrt(Math.pow(ballX - centerX, 2) + Math.pow(ballY - centerY, 2));
-    }
+
     public interface BalanceFailListener {
         void onBalanceFail();
     }
+
     private BalanceFailListener failListener;
 
     public void setBalanceFailListener(BalanceFailListener listener) {
         this.failListener = listener;
     }
-
 }

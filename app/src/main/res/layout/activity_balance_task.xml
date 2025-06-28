@@ -1,64 +1,89 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/balanceRoot"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/balance_background"
+    android:padding="16dp">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary">
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/koalaView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_fileName="Koala_Breathing.json"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:titleTextColor="@android:color/white" />
+    <TextView
+        android:id="@+id/mainText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Press Start when you are ready."
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
 
-    </com.google.android.material.appbar.AppBarLayout>
+        android:gravity="center"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/koalaView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="48dp" />
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="?attr/actionBarSize">
+    <ImageView
+        android:id="@+id/infoIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@android:drawable/ic_dialog_info"
+        android:contentDescription="Info"
+        app:layout_constraintTop_toBottomOf="@id/mainText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
 
-        <TextView
-            android:id="@+id/instructionText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Place your phone on your hand, stretch your arm and lift your right leg. Hold the ball inside the circle."
-            android:textStyle="bold"
-            android:textSize="22sp"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"/>
+    <TextView
+        android:id="@+id/timerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+     android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/infoIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp" />
 
-        <TextView
-            android:id="@+id/timerText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Press start to begin"
-            android:textSize="48sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="20dp"
-            android:gravity="center" />
+    <FrameLayout
+        android:id="@+id/balanceContainer"
+        android:layout_width="261dp"
+        android:layout_height="279dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@id/startButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timerText">
 
         <com.example.healthpet.ui.BalanceView
             android:id="@+id/balanceView"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
-        <Button
-            android:id="@+id/startButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="I'm Ready!"/>
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="START!!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="32dp" />
 
-    </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
