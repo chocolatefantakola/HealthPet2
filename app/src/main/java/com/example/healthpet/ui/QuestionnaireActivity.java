@@ -1,7 +1,9 @@
 package com.example.healthpet.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -18,11 +20,14 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private EditText heightInput, weightInput;
     private Button submitButton;
 
+    private static final String TAG = "QuestionnaireActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_questionnaire);
 
+        // Find views
         ageGroupRadioGroup = findViewById(R.id.ageGroupRadioGroup);
         sexRadioGroup = findViewById(R.id.sexRadioGroup);
         respiratoryRadioGroup = findViewById(R.id.respiratoryRadioGroup);
@@ -32,14 +37,28 @@ public class QuestionnaireActivity extends AppCompatActivity {
 
         submitButton.setOnClickListener(v -> {
             if (validateInput()) {
+
                 String ageGroup = ((RadioButton) findViewById(ageGroupRadioGroup.getCheckedRadioButtonId())).getText().toString();
                 String sex = ((RadioButton) findViewById(sexRadioGroup.getCheckedRadioButtonId())).getText().toString();
                 String respiratory = ((RadioButton) findViewById(respiratoryRadioGroup.getCheckedRadioButtonId())).getText().toString();
                 String height = heightInput.getText().toString().trim();
                 String weight = weightInput.getText().toString().trim();
 
+                SharedPreferences prefs = getSharedPreferences("HealthPetPrefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
 
-                Toast.makeText(this, "Questionnaire submitted!", Toast.LENGTH_SHORT).show();
+
+                if (respiratory.equalsIgnoreCase("Yes")) {
+                    editor.putBoolean("breathingBlocked", true);
+                    Toast.makeText(this, "Breathing task is blocked due to respiratory issues.", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "Respiratory issue detected. Blocking breathing task.");
+                } else {
+                    editor.putBoolean("breathingBlocked", false);
+                    Toast.makeText(this, "Questionnaire submitted successfully.", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "No respiratory issues. Breathing task allowed.");
+                }
+
+                editor.apply();
 
                 Intent intent = new Intent(QuestionnaireActivity.this, HomeActivity.class);
                 startActivity(intent);
@@ -66,7 +85,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
             return false;
         }
         if (respiratoryRadioGroup.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(this, "Please answer the respiratory problem question", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please answer the respiratory question", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

@@ -14,4 +14,8 @@ public interface TaskDao {
 
     @Query("SELECT * FROM TaskCompletion")
     List<TaskCompletion> getAllTasks();
+
+    @Query("SELECT EXISTS(SELECT 1 FROM TaskCompletion WHERE taskName = :taskName AND completionTime >= :fromMillis)")
+    boolean isTaskCompletedAfter(String taskName, long fromMillis);
+
 }
