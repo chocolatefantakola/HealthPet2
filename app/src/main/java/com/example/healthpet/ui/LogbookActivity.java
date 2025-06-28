@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import com.example.healthpet.R;
-import com.example.healthpet.model.TaskCompletion;
 import com.example.healthpet.data.AppDatabase;
+import com.example.healthpet.model.TaskCompletion;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class LogbookActivity extends AppCompatActivity {
 
@@ -26,25 +28,35 @@ public class LogbookActivity extends AppCompatActivity {
         logbookTextView = findViewById(R.id.logbookTextView);
 
         new Thread(() -> {
-            // Room-Datenbank öffnen
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                     AppDatabase.class, "task-database").build();
             List<TaskCompletion> allTasks = db.taskDao().getAllTasks();
 
-            // Ergebnis formatieren
             StringBuilder sb = new StringBuilder();
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+
+            String lastDate = "";
+            String todayStr = dateFormat.format(new Date());
 
             for (TaskCompletion task : allTasks) {
-                sb.append("📝 ")
-                        .append(task.taskName)
-                        .append(" erledigt am ")
-                        .append(sdf.format(new Date(task.completionTime)))
+                String taskDateStr = dateFormat.format(new Date(task.completionTime));
+                String dateLabel = taskDateStr.equals(todayStr) ? "Today" +
+                        "" +
+                        "" +
+                        "" : taskDateStr;
+
+                if (!taskDateStr.equals(lastDate)) {
+                    sb.append("\n──────── ").append(dateLabel).append(" ────────\n");
+                    lastDate = taskDateStr;
+                }
+
+                sb.append("📝 ").append(task.taskName)
+                        .append(" um ").append(timeFormat.format(new Date(task.completionTime)))
                         .append("\n");
             }
 
-            // Ausgabe im UI-Thread anzeigen
-            runOnUiThread(() -> logbookTextView.setText(sb.toString()));
+            runOnUiThread(() -> logbookTextView.setText(sb.toString().trim()));
         }).start();
     }
 }
