@@ -68,6 +68,15 @@
                 android:layout_marginStart="16dp"/>
         </RadioGroup>
 
+        <EditText
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:padding="12dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="16dp"/>
 
         <EditText
             android:id="@+id/heightInput"

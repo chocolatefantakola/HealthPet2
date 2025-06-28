@@ -20,6 +20,9 @@ public class QuestionnaireActivity extends AppCompatActivity {
     private EditText heightInput, weightInput;
     private Button submitButton;
 
+    private EditText nameInput;
+
+
     private static final String TAG = "QuestionnaireActivity";
 
     @Override
@@ -34,6 +37,8 @@ public class QuestionnaireActivity extends AppCompatActivity {
         heightInput = findViewById(R.id.heightInput);
         weightInput = findViewById(R.id.weightInput);
         submitButton = findViewById(R.id.submitQuestionnaireButton);
+        nameInput = findViewById(R.id.nameInput);
+
 
         submitButton.setOnClickListener(v -> {
             if (validateInput()) {
@@ -43,6 +48,7 @@ public class QuestionnaireActivity extends AppCompatActivity {
                 String respiratory = ((RadioButton) findViewById(respiratoryRadioGroup.getCheckedRadioButtonId())).getText().toString();
                 String height = heightInput.getText().toString().trim();
                 String weight = weightInput.getText().toString().trim();
+                String name = nameInput.getText().toString().trim();
 
                 SharedPreferences prefs = getSharedPreferences("HealthPetPrefs", MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
@@ -58,7 +64,10 @@ public class QuestionnaireActivity extends AppCompatActivity {
                     Log.d(TAG, "No respiratory issues. Breathing task allowed.");
                 }
 
+                editor.putString("userName", name);
+                editor.putBoolean("questionnaireDone", true);
                 editor.apply();
+
 
                 Intent intent = new Intent(QuestionnaireActivity.this, HomeActivity.class);
                 startActivity(intent);
@@ -87,6 +96,11 @@ public class QuestionnaireActivity extends AppCompatActivity {
         if (respiratoryRadioGroup.getCheckedRadioButtonId() == -1) {
             Toast.makeText(this, "Please answer the respiratory question", Toast.LENGTH_SHORT).show();
             return false;
+        }
+        if (nameInput.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please enter your name", Toast.LENGTH_SHORT).show();
+            return false;
+
         }
         return true;
     }

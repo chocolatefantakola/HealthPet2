@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
 <ScrollView
     android:id="@+id/rootScrollView"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,32 +30,12 @@
             android:textStyle="bold" />
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp"
-            android:gravity="center">
-
-
-
-            <Button
-                android:id="@+id/change_background"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/change_background"
-                android:backgroundTint="@color/blue"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
-
-
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="350dp"
             android:layout_marginBottom="24dp">
+
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/koala_1"
@@ -61,7 +46,6 @@
                 app:lottie_autoPlay="true"
                 app:lottie_fileName="koala_1.json"
                 app:lottie_loop="true" />
-
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/koala_2"
@@ -83,7 +67,6 @@
                 app:lottie_fileName="koala_3.json"
                 app:lottie_loop="true" />
 
-
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/koala_4"
                 android:layout_width="wrap_content"
@@ -104,20 +87,19 @@
                 app:lottie_fileName="koala_5.json"
                 app:lottie_loop="true" />
         </FrameLayout>
-        <!-- Row 1 -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:gravity="center"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/stepGoalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="@color/blue"
                 android:text="@string/steps"
                 android:textColor="@android:color/white" />
@@ -126,72 +108,98 @@
                 android:id="@+id/waterGoalButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_weight="1"
+                android:layout_marginStart="8dp"
                 android:backgroundTint="@color/teal_200"
                 android:text="@string/water"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 
-        <!-- Row 2 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:gravity="center"
             android:orientation="horizontal">
-
 
             <Button
                 android:id="@+id/memoryTaskButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_weight="1"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="@color/purple_500"
                 android:text="@string/memory"
                 android:textColor="@android:color/white" />
+            <Button
+                android:id="@+id/breathingTaskButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/yellow"
+                android:text="@string/breathe"
+                android:textColor="@android:color/black" />
+
+
         </LinearLayout>
 
-        <!-- Row 3 -->
+        <!-- Zeile 3 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/balanceTaskButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="@color/red"
                 android:text="@string/balance"
                 android:textColor="@android:color/white" />
 
 
+
             <Button
-                android:id="@+id/breathingTaskButton"
+                android:id="@+id/logbookButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/yellow"
-                android:text="@string/breathe"
-                android:textColor="@android:color/black" />
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/blue"
+                android:text="📘 Logbuch öffnen"
+                android:textColor="@android:color/white" />
+
         </LinearLayout>
-        <Button
-            android:id="@+id/logbookButton"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📘 Logbuch öffnen"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/blue"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+
+            android:layout_marginBottom="24dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/change_background"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/change_background"
+                android:backgroundTint="@color/blue"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
     </LinearLayout>
-
-
-
 </ScrollView>
+    <ImageButton
+        android:id="@+id/infoButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Info"
+        android:src="@android:drawable/ic_menu_info_details" />
+</FrameLayout>

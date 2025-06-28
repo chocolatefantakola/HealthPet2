@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,18 @@ public class HomeActivity extends AppCompatActivity {
 
         DailyResetManager.checkAndResetIfNeeded(this);
 
+        SharedPreferences prefs = getSharedPreferences("HealthPetPrefs", MODE_PRIVATE);
+
+        boolean questionnaireDone = prefs.getBoolean("questionnaireDone", false);
+        if (!questionnaireDone) {
+            Intent intent = new Intent(this, QuestionnaireActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+
+
         // Views
         rootScrollView = findViewById(R.id.rootScrollView);
         welcomeTextView = findViewById(R.id.welcomeTextView);
@@ -60,6 +73,8 @@ public class HomeActivity extends AppCompatActivity {
         breathingTaskButton = findViewById(R.id.breathingTaskButton);
         changeBackgroundButton = findViewById(R.id.change_background);
         logbookButton = findViewById(R.id.logbookButton);
+        ImageButton infoButton = findViewById(R.id.infoButton);
+
 
         // Button Colors
         stepGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
@@ -69,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
         breathingTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
 
         // Check if breathing task is blocked
-        checkBreathingTaskBlocked();
+        checkBreathingTaskBlocked(prefs);
 
         // Navigation Buttons
         stepGoalButton.setOnClickListener(v -> startActivity(new Intent(this, StepGoalActivity.class)));
@@ -78,8 +93,20 @@ public class HomeActivity extends AppCompatActivity {
         balanceTaskButton.setOnClickListener(v -> startActivity(new Intent(this, BalanceTaskActivity.class)));
         waterGoalButton.setOnClickListener(v -> startActivity(new Intent(this, WaterGoalActivity.class)));
 
+        infoButton.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Info")
+                    .setMessage("This is a placeholder info dialog. Here you can provide helpful information.")
+                    .setPositiveButton("OK", null)
+                    .show();
+        });
+
+
+        String userName = prefs.getString("userName", "User");
+        welcomeTextView.setText("Welcome back " + userName + "!");
+
+
         breathingTaskButton.setOnClickListener(v -> {
-            SharedPreferences prefs = getSharedPreferences("HealthPetPrefs", MODE_PRIVATE);
             boolean breathingBlocked = prefs.getBoolean("breathingBlocked", false);
             if (breathingBlocked) {
                 Toast.makeText(this, "Breathing task is blocked due to respiratory issues.", Toast.LENGTH_SHORT).show();
@@ -118,10 +145,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // 🔥 Check if breathing is blocked and update button UI
-    private void checkBreathingTaskBlocked() {
-        SharedPreferences prefs = getSharedPreferences("HealthPetPrefs", MODE_PRIVATE);
+    private void checkBreathingTaskBlocked(SharedPreferences prefs) {
         boolean breathingBlocked = prefs.getBoolean("breathingBlocked", false);
-
         if (breathingBlocked) {
             breathingTaskButton.setEnabled(false);
             breathingTaskButton.setAlpha(0.5f);
@@ -132,6 +157,7 @@ public class HomeActivity extends AppCompatActivity {
             breathingTaskButton.setText("Breathing Task");
         }
     }
+
 
     private void checkAllTasksCompletion() {
         new Thread(() -> {

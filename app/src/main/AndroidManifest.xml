@@ -14,9 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HealthPet">
 
-        <!-- Make LoginActivity the launcher activity -->
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,13 +23,12 @@
             </intent-filter>
         </activity>
 
-        <!-- HomeActivity does not need the MAIN action anymore -->
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".ui.QuestionnaireActivity"
             android:exported="true" />
 
         <activity
-            android:name=".ui.QuestionnaireActivity"
+            android:name=".ui.LoginActivity"
             android:exported="false" />
 
         <activity
