@@ -25,7 +25,7 @@ public class BalanceView extends View {
         circlePaint.setStyle(Paint.Style.FILL);
 
         ballPaint = new Paint();
-        ballPaint.setColor(Color.BLACK);
+        ballPaint.setColor(Color.WHITE);
         ballPaint.setStyle(Paint.Style.FILL);
     }
 

@@ -2,6 +2,7 @@ package com.example.healthpet.ui;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,18 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.room.Room;
 
 import com.example.healthpet.R;
-import com.example.healthpet.model.TaskCompletion;
 import com.example.healthpet.data.AppDatabase;
+import com.example.healthpet.model.TaskCompletion;
+
+import java.util.Calendar;
 
 public class BalanceTaskActivity extends AppCompatActivity implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
-
 
     private TextView timerText;
     private Button startButton;
@@ -40,12 +41,15 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
 
     private Stage currentStage = Stage.READY;
     private boolean isBalancing = false;
-    private static final int BALANCE_DURATION = 10000; // 10 Sekunden
+    private static final int BALANCE_DURATION = 10000;
     private CountDownTimer balanceTimer;
 
     private float filteredX = 0;
     private float filteredY = 0;
     private static final float ALPHA = 0.3f;
+
+    private static final String PREFS_NAME = "BalancePrefs";
+    private static final String KEY_LAST_DONE = "lastBalanceDone";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,19 +58,11 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
 
         mainText = findViewById(R.id.mainText);
         infoIcon = findViewById(R.id.infoIcon);
-
-        infoIcon.setOnClickListener(v -> showInstructionDialog());
-
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Balance Task");
-        }
-
-
         timerText = findViewById(R.id.timerText);
         startButton = findViewById(R.id.startButton);
         balanceView = findViewById(R.id.balanceView);
+
+        infoIcon.setOnClickListener(v -> showInstructionDialog());
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
@@ -83,7 +79,11 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
             }
         });
 
-        startButton.setOnClickListener(v -> startSession());
+        if (isTaskCompletedToday()) {
+            blockTask();
+        } else {
+            startButton.setOnClickListener(v -> startSession());
+        }
     }
 
     private void startSession() {
@@ -95,8 +95,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         if (currentStage == Stage.LEFT_LEG) {
             startBalanceTimer();
         } else {
-            // Countdown für das rechte Bein
-            new CountDownTimer(4000, 1000) {  // 3,2,1,Go!
+            new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     int secondsLeft = (int) (millisUntilFinished / 1000);
                     if (secondsLeft > 0) {
@@ -113,8 +112,6 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }
     }
 
-
-
     private void startBalanceTimer() {
         isBalancing = true;
         timerText.setText("10");
@@ -126,17 +123,18 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                 isBalancing = false;
                 if (currentStage == Stage.RIGHT_LEG) {
                     currentStage = Stage.REST;
-                    // Jetzt Pause – warte bis der User wieder startet
                     showRestDialog("Great! Now take a break and press Start when you're ready for the left leg.");
                 } else if (currentStage == Stage.LEFT_LEG) {
                     currentStage = Stage.DONE;
-                    finishSuccess();
+                    finishSuccess();  // Nur jetzt wird gespeichert!
                 }
             }
         }.start();
     }
 
     private void showRestDialog(String message) {
+        if (isFinishing() || isDestroyed()) return;  // ✅ Activity ist nicht mehr aktiv → kein Dialog
+
         new AlertDialog.Builder(this)
                 .setTitle("Rest")
                 .setMessage(message)
@@ -149,62 +147,67 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                 .show();
     }
 
-
-
-
-    private void startRest() {
-        new CountDownTimer(3000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                timerText.setText(String.valueOf(millisUntilFinished / 1000));
-            }
-            public void onFinish() {
-                currentStage = Stage.LEFT_LEG;
-                // Zeig den Dialog zur Info, wenn du magst
-                showInstructionDialogForLeftLeg();
-
-                new CountDownTimer(3000, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                        timerText.setText("Starting in: " + (millisUntilFinished / 1000));
-                    }
-                    public void onFinish() {
-                        startBalanceTimer();
-                    }
-                }.start();
-            }
-        }.start();
-    }
-
-    private void showInstructionDialogForLeftLeg() {
-        new AlertDialog.Builder(this)
-                .setTitle("Instructions")
-                .setMessage("Place your phone on your upward-facing palm, stretch your arm, and lift your left leg. Keep the ball inside the circle.")
-                .setPositiveButton("OK", null)
-                .show();
-    }
-
-
-
     private void finishSuccess() {
         timerText.setText("");
 
+        // Nur hier wird gespeichert
         long now = System.currentTimeMillis();
-        new Thread(() -> {
-            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "task-database").build();
-            db.taskDao().insert(new TaskCompletion("Balance", now));
-        }).start();
+        saveLastDoneTime();
+        saveTaskCompletion(now);
 
-        new AlertDialog.Builder(this)
-                .setTitle("🎉 Balance Success!")
-                .setMessage("Great! You completed the balance task successfully!")
-                .setPositiveButton("OK", (dialog, which) -> {
-                    Intent intent = new Intent(BalanceTaskActivity.this, HomeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .show();
+        if (!isFinishing() && !isDestroyed()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("🎉 Balance Success!")
+                    .setMessage("Great! You completed the balance task successfully!")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        Intent intent = new Intent(BalanceTaskActivity.this, HomeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
     }
 
+    private void saveLastDoneTime() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
+    }
+
+    private void saveTaskCompletion(long timestamp) {
+        new Thread(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                            AppDatabase.class, "task-database")
+                    .fallbackToDestructiveMigration()
+                    .build();
+            db.taskDao().insert(new TaskCompletion("Balance", timestamp));
+        }).start();
+    }
+
+    private boolean isTaskCompletedToday() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
+        if (lastDoneMillis == 0) return false;
+
+        Calendar now = Calendar.getInstance();
+        Calendar lastDone = Calendar.getInstance();
+        lastDone.setTimeInMillis(lastDoneMillis);
+
+        return isSameDay(now, lastDone) && now.get(Calendar.HOUR_OF_DAY) >= 7;
+    }
+
+    private boolean isSameDay(Calendar cal1, Calendar cal2) {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private void blockTask() {
+        startButton.setEnabled(false);
+        startButton.setText("✅ Already done today");
+        mainText.setText("You’ve already completed this today.\nCome back after 7 AM tomorrow.");
+        Toast.makeText(this, "Task already done today.", Toast.LENGTH_LONG).show();
+    }
 
     private void showFailDialog() {
         isBalancing = false;
@@ -228,8 +231,6 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         startButton.setVisibility(View.VISIBLE);
         timerText.setText("");
     }
-
-
 
     @Override
     protected void onResume() {
@@ -260,13 +261,6 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        finish();
-        return true;
-    }
-
-
     private void showInstructionDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Instructions")
@@ -274,6 +268,4 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                 .setPositiveButton("OK", null)
                 .show();
     }
-
-
 }

@@ -1,301 +1,192 @@
 package com.example.healthpet.ui;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.os.Handler;
+import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.room.Room;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.healthpet.R;
+import com.example.healthpet.data.AppDatabase;
+import com.example.healthpet.model.TaskCompletion;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 
 public class MemoryTaskActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
+    private GridLayout memoryGrid;
     private TextView instructionText;
+    private ArrayList<Integer> cardValues = new ArrayList<>();
+    private ArrayList<ImageView> tiles = new ArrayList<>();
+    private int firstIndex = -1;
+    private boolean busy = false;
 
-    private LinearLayout gameChoiceLayout;
-    private Button numberGameButton, colorGameButton;
+    private final int[] placeholderImages = {
+            R.drawable.koala_memory1,
+            R.drawable.koala_memory2,
+            R.drawable.koala_memory3,
+            R.drawable.koala_memory4,
+            R.drawable.koala_memory5,
+            R.drawable.koala_memory6
+    };
 
-    private LinearLayout numberGameLayout;
-    private LinearLayout colorGameLayout;
+    private final int cardBack = R.drawable.koala_abgeschnitten;
 
-    // Number game variables
-    private ArrayList<Integer> numberSequence = new ArrayList<>();
-    private ArrayList<Button> numberButtons = new ArrayList<>();
-    private int currentNumberIndex = 0;
-    private boolean numberGameActive = false;
-
-    // Color game variables
-    private ArrayList<Integer> colorPairs = new ArrayList<>();
-    private ArrayList<View> colorTiles = new ArrayList<>();
-    private int firstColorIndex = -1;
-    private boolean colorGameActive = false;
+    private static final String PREFS_NAME = "MemoryPrefs";
+    private static final String KEY_LAST_DONE = "lastMemoryDone";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory_task);
 
-        toolbar = findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
-
         instructionText = findViewById(R.id.instructionText);
+        memoryGrid = findViewById(R.id.memoryGrid);
+        LottieAnimationView koalaView = findViewById(R.id.koalaView);
 
-        gameChoiceLayout = findViewById(R.id.gameChoiceLayout);
-        numberGameButton = findViewById(R.id.numberGameButton);
-        colorGameButton = findViewById(R.id.colorGameButton);
+        koalaView.setAnimation("Koala_Breathing.json");
+        koalaView.playAnimation();
 
-        numberGameLayout = findViewById(R.id.numberGameLayout);
-        colorGameLayout = findViewById(R.id.colorGameLayout);
-
-        numberGameButton.setOnClickListener(v -> startNumberGame());
-        colorGameButton.setOnClickListener(v -> startColorGame());
-
-        showIntro();
-    }
-
-    private void showIntro() {
-        instructionText.setText("Choose a memory game below.");
-        gameChoiceLayout.setVisibility(View.VISIBLE);
-        numberGameLayout.setVisibility(View.GONE);
-        colorGameLayout.setVisibility(View.GONE);
-        numberGameActive = false;
-        colorGameActive = false;
-    }
-
-
-    private void startNumberGame() {
-        gameChoiceLayout.setVisibility(View.GONE);
-        colorGameLayout.setVisibility(View.GONE);
-        numberGameLayout.setVisibility(View.VISIBLE);
-        instructionText.setText("Memorize the numbers in order!");
-
-        numberButtons.clear();
-        numberSequence.clear();
-        currentNumberIndex = 0;
-        numberGameActive = true;
-        numberGameLayout.removeAllViews();
-
-        for (int i = 1; i <= 5; i++) numberSequence.add(i);
-
-        for (int num : numberSequence) {
-            Button btn = createNumberButton(String.valueOf(num));
-            btn.setTag(num);
-            numberButtons.add(btn);
-            numberGameLayout.addView(btn);
-        }
-
-        new CountDownTimer(5000, 1000) {
-            public void onTick(long millisUntilFinished) { }
-            public void onFinish() {
-                shuffleAndHideNumbers();
-            }
-        }.start();
-    }
-
-    private Button createNumberButton(String text) {
-        Button btn = new Button(this);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, 150, 1);
-        params.setMargins(8, 0, 8, 0);
-        btn.setLayoutParams(params);
-        btn.setText(text);
-        btn.setTextSize(32f);
-        btn.setTextColor(Color.WHITE);
-        btn.setBackgroundColor(Color.DKGRAY);
-        return btn;
-    }
-
-    private void shuffleAndHideNumbers() {
-        ArrayList<Integer> originalPositions = new ArrayList<>();
-        for (int i = 0; i < numberButtons.size(); i++) {
-            originalPositions.add(i);
-        }
-        ArrayList<Integer> shuffledPositions = new ArrayList<>(originalPositions);
-        Collections.shuffle(shuffledPositions);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-        ArrayList<Animator> animations = new ArrayList<>();
-
-        for (int i = 0; i < numberButtons.size(); i++) {
-            Button btn = numberButtons.get(i);
-            int newPos = shuffledPositions.get(i);
-
-            int distance = (newPos - i) * (btn.getWidth() + 16);
-            ObjectAnimator animX = ObjectAnimator.ofFloat(btn, "translationX", btn.getTranslationX(), distance);
-            animations.add(animX);
-        }
-
-        animatorSet.playTogether(animations);
-        animatorSet.setDuration(800);
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                for (Button btn : numberButtons) {
-                    btn.setText("?");
-                    btn.setBackgroundColor(Color.BLUE);
-                    btn.setEnabled(true);
-                    btn.setOnClickListener(v -> checkNumberButton((Button) v));
-                }
-                instructionText.setText("Tap numbers in order: 1 → 5");
-            }
-        });
-        animatorSet.start();
-    }
-
-    private void checkNumberButton(Button btn) {
-        if (!numberGameActive) return;
-
-        int tappedNumber = (int) btn.getTag();
-
-        if (tappedNumber == currentNumberIndex + 1) {
-            currentNumberIndex++;
-            btn.setBackgroundColor(Color.GREEN);
-            btn.setText(String.valueOf(tappedNumber));
-            btn.setEnabled(false);
-
-            if (currentNumberIndex == 5) {
-                instructionText.setText("Congrats! You completed the Number Game.");
-                numberGameActive = false;
-
-                btn.postDelayed(this::showIntro, 2000);
-            }
+        if (isTaskCompletedToday()) {
+            blockTask();
         } else {
-            btn.setBackgroundColor(Color.RED);
-            instructionText.setText("Wrong! Try again.");
-            resetNumberGame();
+            setupGame();
         }
     }
 
-    private void resetNumberGame() {
-        currentNumberIndex = 0;
-        for (Button btn : numberButtons) {
-            btn.setBackgroundColor(Color.BLUE);
-            btn.setText("?");
-            btn.setEnabled(true);
+    private void setupGame() {
+        cardValues.clear();
+        for (int i = 0; i < 6; i++) {
+            cardValues.add(i);
+            cardValues.add(i);
         }
-    }
+        Collections.shuffle(cardValues);
 
+        memoryGrid.removeAllViews();
+        tiles.clear();
 
-    private void startColorGame() {
-        gameChoiceLayout.setVisibility(View.GONE);
-        numberGameLayout.setVisibility(View.GONE);
-        colorGameLayout.setVisibility(View.VISIBLE);
+        for (int i = 0; i < 12; i++) {
+            ImageView card = new ImageView(this);
+            card.setImageResource(cardBack);
+            card.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        instructionText.setText("Memorize colors and find all pairs!");
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.width = 0;
+            params.height = 0;
+            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            card.setLayoutParams(params);
 
-        colorGameActive = true;
-        firstColorIndex = -1;
-        colorTiles.clear();
-        colorPairs.clear();
-        colorGameLayout.removeAllViews();
-
-        // Prepare color pairs (two of each color)
-        colorPairs.add(Color.RED);
-        colorPairs.add(Color.RED);
-        colorPairs.add(Color.BLUE);
-        colorPairs.add(Color.BLUE);
-        colorPairs.add(Color.GREEN);
-        colorPairs.add(Color.GREEN);
-
-        Collections.shuffle(colorPairs);
-
-        // Create tiles as Views
-        for (int i = 0; i < colorPairs.size(); i++) {
-            View tile = new View(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, 200, 1);
-            params.setMargins(8, 0, 8, 0);
-            tile.setLayoutParams(params);
-            tile.setBackgroundColor(colorPairs.get(i));
-            tile.setTag("hidden"); // initially visible but will hide after timer
             final int index = i;
-            tile.setOnClickListener(v -> onColorTileClicked(index));
-            colorTiles.add(tile);
-            colorGameLayout.addView(tile);
-        }
+            card.setOnClickListener(v -> onCardClicked(index));
 
-        // Show colors for 4 seconds, then hide tiles (set black background)
-        new CountDownTimer(4000, 1000) {
-            public void onTick(long millisUntilFinished) {}
-            public void onFinish() {
-                for (View tile : colorTiles) {
-                    tile.setBackgroundColor(Color.BLACK);
-                    tile.setTag("hidden");
-                }
-                instructionText.setText("Tap tiles to find matching colors.");
-            }
-        }.start();
+            tiles.add(card);
+            memoryGrid.addView(card);
+        }
     }
 
-    private void onColorTileClicked(int index) {
-        if (!colorGameActive) return;
+    private void onCardClicked(int index) {
+        if (busy) return;
+        ImageView clickedCard = tiles.get(index);
 
-        View clickedTile = colorTiles.get(index);
-        String state = (String) clickedTile.getTag();
+        if ("matched".equals(clickedCard.getTag()) || "visible".equals(clickedCard.getTag())) return;
 
-        if ("matched".equals(state) || "visible".equals(state)) {
-            // Ignore clicks on matched or currently visible tiles
-            return;
-        }
+        clickedCard.setImageResource(placeholderImages[cardValues.get(index)]);
+        clickedCard.setTag("visible");
 
-        // Reveal clicked tile
-        clickedTile.setBackgroundColor(colorPairs.get(index));
-        clickedTile.setTag("visible");
-
-        if (firstColorIndex == -1) {
-            // First tile selected
-            firstColorIndex = index;
+        if (firstIndex == -1) {
+            firstIndex = index;
         } else {
-            // Second tile selected
-            if (colorPairs.get(firstColorIndex).equals(colorPairs.get(index))) {
-                // Match found
-                colorTiles.get(firstColorIndex).setTag("matched");
-                colorTiles.get(index).setTag("matched");
-                instructionText.setText("Good job! Keep finding pairs.");
-
-                // Check if all matched
-                if (allColorTilesMatched()) {
-                    instructionText.setText("Congrats! You found all pairs.");
-                    colorGameActive = false;
-
-                    clickedTile.postDelayed(this::showIntro, 2000);
+            if (cardValues.get(firstIndex).equals(cardValues.get(index)) && firstIndex != index) {
+                clickedCard.setTag("matched");
+                tiles.get(firstIndex).setTag("matched");
+                firstIndex = -1;
+                if (checkWin()) {
+                    onGameCompleted();
                 }
             } else {
-                // No match - hide both tiles after delay
-                final int firstIndex = firstColorIndex;
-                final int secondIndex = index;
-                clickedTile.postDelayed(() -> {
-                    colorTiles.get(firstIndex).setBackgroundColor(Color.BLACK);
-                    colorTiles.get(secondIndex).setBackgroundColor(Color.BLACK);
-                    colorTiles.get(firstIndex).setTag("hidden");
-                    colorTiles.get(secondIndex).setTag("hidden");
+                busy = true;
+                final int prevIndex = firstIndex;
+                firstIndex = -1;
+                new Handler().postDelayed(() -> {
+                    clickedCard.setImageResource(cardBack);
+                    clickedCard.setTag("hidden");
+                    tiles.get(prevIndex).setImageResource(cardBack);
+                    tiles.get(prevIndex).setTag("hidden");
+                    busy = false;
                 }, 1000);
             }
-            firstColorIndex = -1;
         }
     }
 
-    private boolean allColorTilesMatched() {
-        for (View tile : colorTiles) {
+    private boolean checkWin() {
+        for (ImageView tile : tiles) {
             if (!"matched".equals(tile.getTag())) {
                 return false;
             }
         }
         return true;
+    }
+
+    private void onGameCompleted() {
+        instructionText.setText("🎉 All pairs found!");
+        saveLastDoneTime();
+        saveTaskCompletion();
+
+        new AlertDialog.Builder(this)
+                .setTitle("Congratulations!")
+                .setMessage("You completed the Memory Game!")
+                .setPositiveButton("OK", (d, w) -> finish())
+                .setCancelable(false)
+                .show();
+    }
+
+    private void saveLastDoneTime() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
+    }
+
+    private boolean isTaskCompletedToday() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
+        if (lastDoneMillis == 0) return false;
+
+        Calendar now = Calendar.getInstance();
+        Calendar lastDone = Calendar.getInstance();
+        lastDone.setTimeInMillis(lastDoneMillis);
+
+        return isSameDay(now, lastDone) && now.get(Calendar.HOUR_OF_DAY) >= 7;
+    }
+
+    private boolean isSameDay(Calendar cal1, Calendar cal2) {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private void blockTask() {
+        for (ImageView tile : tiles) {
+            tile.setEnabled(false);
+        }
+        instructionText.setText("✅ Already completed today!");
+        Toast.makeText(this, "You’ve already completed this today. Come back tomorrow after 7 AM.", Toast.LENGTH_LONG).show();
+    }
+
+    private void saveTaskCompletion() {
+        new Thread(() -> {
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                            AppDatabase.class, "task-database")
+                    .fallbackToDestructiveMigration()
+                    .build();
+            db.taskDao().insert(new TaskCompletion("Memory", System.currentTimeMillis()));
+        }).start();
     }
 }

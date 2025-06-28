@@ -1,84 +1,50 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#FFA726">
+    android:background="#87CEEB"
+    android:padding="8dp">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#6200EE"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/koalaView"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_fileName="Koala_Breathing.json"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"/>
 
     <TextView
         android:id="@+id/instructionText"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolBar"
-        android:text="@string/choose_a_memory_game_below"
+        android:text="Find all pairs!"
+        android:textSize="20sp"
         android:textColor="#000"
-        android:textSize="18sp"
         android:gravity="center"
-        android:padding="16dp" />
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/koalaView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"/>
 
-    <!-- Game choice buttons container -->
-    <LinearLayout
-        android:id="@+id/gameChoiceLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/instructionText"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:padding="12dp">
+    <GridLayout
+        android:id="@+id/memoryGrid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:columnCount="4"
+        android:rowCount="3"
+        android:alignmentMode="alignMargins"
+        android:useDefaultMargins="true"
+        app:layout_constraintTop_toBottomOf="@id/instructionText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
 
-        <Button
-            android:id="@+id/numberGameButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/number_memory"
-            android:backgroundTint="#4CAF50"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:layout_marginEnd="8dp" />
-
-        <Button
-            android:id="@+id/colorGameButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/color_match"
-            android:backgroundTint="#2196F3"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
-
-    <!-- Number game layout -->
-    <LinearLayout
-        android:id="@+id/numberGameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/instructionText"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:visibility="gone"
-        android:padding="16dp" />
-
-    <!-- Color game layout -->
-    <LinearLayout
-        android:id="@+id/colorGameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/instructionText"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:visibility="gone"
-        android:padding="16dp" />
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
