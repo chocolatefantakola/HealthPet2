@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -24,7 +25,7 @@ import com.example.healthpet.R;
 import com.example.healthpet.data.AppDatabase;
 import com.example.healthpet.service.StepCounterService;
 import com.example.healthpet.util.DailyResetManager;
-import android.util.Log;
+
 import java.util.Calendar;
 
 public class HomeActivity extends AppCompatActivity {
@@ -38,9 +39,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private int currentBackground = 1;
     private LottieAnimationView[] koalas;
-    private int currentLevel = 3;
+    private int currentMood = 3;
+
     private Handler handler = new Handler();
-    private Runnable sadnessRunnable;
 
     private static final int REQUEST_ACTIVITY_RECOGNITION = 1;
 
@@ -62,8 +63,6 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-
-        // Views
         rootScrollView = findViewById(R.id.rootScrollView);
         welcomeTextView = findViewById(R.id.welcomeTextView);
         stepGoalButton = findViewById(R.id.stepGoalButton);
@@ -75,37 +74,30 @@ public class HomeActivity extends AppCompatActivity {
         logbookButton = findViewById(R.id.logbookButton);
         ImageButton infoButton = findViewById(R.id.infoButton);
 
+        // Koalas Setup (Mood levels: 0-happy, 1-neutral, 2-sad, 3-crying)
+        koalas = new LottieAnimationView[]{
+                findViewById(R.id.koala_1),
+                findViewById(R.id.koala_2),
+                findViewById(R.id.koala_3),
+                findViewById(R.id.koala_4)
+        };
 
-        // Button Colors
+        showKoala(currentMood);
+
+
         stepGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
         waterGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         memoryTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
         balanceTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
         breathingTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_dark));
 
-        // Check if breathing task is blocked
         checkBreathingTaskBlocked(prefs);
 
-        // Navigation Buttons
+
         stepGoalButton.setOnClickListener(v -> startActivity(new Intent(this, StepGoalActivity.class)));
-        logbookButton.setOnClickListener(v -> startActivity(new Intent(this, LogbookActivity.class)));
+        waterGoalButton.setOnClickListener(v -> startActivity(new Intent(this, WaterGoalActivity.class)));
         memoryTaskButton.setOnClickListener(v -> startActivity(new Intent(this, MemoryTaskActivity.class)));
         balanceTaskButton.setOnClickListener(v -> startActivity(new Intent(this, BalanceTaskActivity.class)));
-        waterGoalButton.setOnClickListener(v -> startActivity(new Intent(this, WaterGoalActivity.class)));
-
-        infoButton.setOnClickListener(v -> {
-            new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("Info")
-                    .setMessage("This is a placeholder info dialog. Here you can provide helpful information.")
-                    .setPositiveButton("OK", null)
-                    .show();
-        });
-
-
-        String userName = prefs.getString("userName", "User");
-        welcomeTextView.setText("Welcome back " + userName + "!");
-
-
         breathingTaskButton.setOnClickListener(v -> {
             boolean breathingBlocked = prefs.getBoolean("breathingBlocked", false);
             if (breathingBlocked) {
@@ -114,17 +106,22 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(this, BreathingTaskActivity.class));
             }
         });
+        logbookButton.setOnClickListener(v -> startActivity(new Intent(this, LogbookActivity.class)));
+
+        infoButton.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Info")
+                    .setMessage("Complete tasks to improve your koala's mood! Mood resets every day at 7 AM.")
+                    .setPositiveButton("OK", null)
+                    .show();
+        });
+
+        String userName = prefs.getString("userName", "User");
+        welcomeTextView.setText("Welcome back " + userName + "!");
 
         checkActivityRecognitionPermission();
 
-        // Koalas Setup
-        koalas = new LottieAnimationView[]{
-                findViewById(R.id.koala_1), findViewById(R.id.koala_2), findViewById(R.id.koala_3),
-                findViewById(R.id.koala_4), findViewById(R.id.koala_5)
-        };
-        showKoala(currentLevel);
-
-        checkAllTasksCompletion();
+        checkTasksAndUpdateMood();
 
         changeBackgroundButton.setOnClickListener(v -> {
             switch (currentBackground) {
@@ -144,7 +141,6 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    // 🔥 Check if breathing is blocked and update button UI
     private void checkBreathingTaskBlocked(SharedPreferences prefs) {
         boolean breathingBlocked = prefs.getBoolean("breathingBlocked", false);
         if (breathingBlocked) {
@@ -158,8 +154,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-
-    private void checkAllTasksCompletion() {
+    private void checkTasksAndUpdateMood() {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                     AppDatabase.class, "task-database").build();
@@ -172,24 +167,40 @@ public class HomeActivity extends AppCompatActivity {
             boolean balanceDone = db.taskDao().isTaskCompletedAfter("Balance", todayStartMillis);
             boolean memoryDone = db.taskDao().isTaskCompletedAfter("Memory", todayStartMillis);
 
-
-            /*Log.d("HealthPetDebug", "stepDone: " + stepDone);
+            /* Log.d("HealthPetDebug", "stepDone: " + stepDone);
             Log.d("HealthPetDebug", "waterDone: " + waterDone);
             Log.d("HealthPetDebug", "breathingDone: " + breathingDone);
             Log.d("HealthPetDebug", "balanceDone: " + balanceDone);
-            Log.d("HealthPetDebug", "memoryDone: " + memoryDone);
-            */
+            Log.d("HealthPetDebug", "memoryDone: " + memoryDone);*/
 
-            boolean allDone = stepDone && waterDone && breathingDone && balanceDone && memoryDone;
+            int tasksCompleted = 0;
+            if (stepDone) tasksCompleted++;
+            if (waterDone) tasksCompleted++;
+            if (breathingDone) tasksCompleted++;
+            if (balanceDone) tasksCompleted++;
+            if (memoryDone) tasksCompleted++;
+
+
+            int mood;
+            if (tasksCompleted >= 5) {
+                mood = 0;
+            } else if (tasksCompleted >= 3) {
+                mood = 1;
+            } else if (tasksCompleted == 2) {
+                mood = 2;
+            } else {
+                mood = 3;
+            }
+
+            currentMood = mood;
 
             runOnUiThread(() -> {
-                if (allDone) {
-                    currentLevel = 0;
-                    showKoala(currentLevel);
-                    handler.removeCallbacks(sadnessRunnable);
-                    welcomeTextView.setText("🎉 All tasks done! ");
+                showKoala(currentMood);
+
+                if (mood == 0) {
+                    welcomeTextView.setText("🎉 All tasks done!");
                 } else {
-                    scheduleSadness();
+                    welcomeTextView.setText("Complete more tasks to make Koala happier!");
                 }
             });
         }).start();
@@ -208,22 +219,11 @@ public class HomeActivity extends AppCompatActivity {
         return calendar.getTimeInMillis();
     }
 
-    private void showKoala(int level) {
+    private void showKoala(int mood) {
         for (int i = 0; i < koalas.length; i++) {
-            koalas[i].setVisibility(i == level ? View.VISIBLE : View.GONE);
-            if (i == level) koalas[i].playAnimation();
+            koalas[i].setVisibility(i == mood ? View.VISIBLE : View.GONE);
+            if (i == mood) koalas[i].playAnimation();
         }
-    }
-
-    private void scheduleSadness() {
-        sadnessRunnable = () -> {
-            if (currentLevel < koalas.length - 1) {
-                currentLevel++;
-                showKoala(currentLevel);
-                scheduleSadness();
-            }
-        };
-        handler.postDelayed(sadnessRunnable, 20000);
     }
 
     private void checkActivityRecognitionPermission() {

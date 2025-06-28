@@ -150,7 +150,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
     private void finishSuccess() {
         timerText.setText("");
 
-        // Nur hier wird gespeichert
+
         long now = System.currentTimeMillis();
         saveLastDoneTime();
         saveTaskCompletion(now);

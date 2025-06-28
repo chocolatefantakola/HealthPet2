@@ -15,7 +15,7 @@
             android:id="@+id/logbookTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📘 Logbuch"
+            android:text="@string/logbuch"
             android:textSize="20sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"

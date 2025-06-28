@@ -168,7 +168,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:backgroundTint="@color/blue"
-                android:text="📘 Logbuch öffnen"
+                android:text="@string/logbuch_ffnen"
                 android:textColor="@android:color/white" />
 
         </LinearLayout>

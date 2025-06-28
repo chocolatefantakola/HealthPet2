@@ -24,19 +24,15 @@ public class DailyResetManager {
     }
 
     private static void performReset(Context context) {
-        // Beispiel: Wasser
+
         SharedPreferences waterPrefs = context.getSharedPreferences("WaterPrefs", Context.MODE_PRIVATE);
         waterPrefs.edit().putLong("waterAmount", 0).putBoolean("goalReached", false).apply();
 
-        // Beispiel: StepGoal
+
         SharedPreferences stepPrefs = context.getSharedPreferences("StepPrefs", Context.MODE_PRIVATE);
         stepPrefs.edit().putLong("stepCount", 0).apply();
 
-        // Weitere Tasks hier resetten
-        // z.B. RestGoalPrefs, MemoryTaskPrefs, etc.
 
-        // Optional: Log oder Toast
-        // Toast.makeText(context, "Daily reset done", Toast.LENGTH_SHORT).show();
     }
 
     private static String getTodayDateString() {

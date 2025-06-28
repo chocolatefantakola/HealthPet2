@@ -22,7 +22,7 @@
         android:id="@+id/instructionText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Find all pairs!"
+        android:text="@string/find_all_pairs"
         android:textSize="20sp"
         android:textColor="#000"
         android:gravity="center"

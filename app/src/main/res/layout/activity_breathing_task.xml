@@ -10,7 +10,7 @@
     android:padding="24dp"
     android:gravity="center_horizontal">
 
-    <!-- 🐨 Lottie-Animation oben -->
+
     <FrameLayout
         android:layout_width="256dp"
         android:layout_height="297dp"
@@ -27,20 +27,20 @@
             app:lottie_loop="true" />
     </FrameLayout>
 
-    <!-- 🧘‍♀️ Anleitungstext -->
 
-    <!-- 💨 Atem-Kreis unten im Drittel -->
+
+
     <TextView
         android:id="@+id/instructionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
         android:gravity="center"
-        android:text="Bereit zum Atmen?"
+        android:text="@string/bereit_zum_atmen"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
 
-    <!-- ▶️ Start / Restart Button -->
+
 
     <View
         android:id="@+id/breathingCircle"

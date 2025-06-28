@@ -39,7 +39,7 @@ public class WaterGoalActivity extends AppCompatActivity {
         buttonOne = findViewById(R.id.button_one);
         buttonDone = findViewById(R.id.button_done);
 
-        // Check if task is already completed today
+
         if (isTaskCompletedToday()) {
             blockTask();
         } else {
@@ -105,10 +105,10 @@ public class WaterGoalActivity extends AppCompatActivity {
         lastDone.setTimeInMillis(lastDoneMillis);
 
         if (isSameDay(now, lastDone)) {
-            // Check if current time is after 7 AM
+
             return now.get(Calendar.HOUR_OF_DAY) >= 7;
         } else {
-            // New day → Reset data
+
             resetDailyProgress();
             return false;
         }

@@ -41,4 +41,16 @@
     <string name="rest_status_loading">Rest status loading...</string>
     <string name="steps_remaining_10000">Steps remaining: 10000</string>
     <string name="task_info">Task info</string>
+    <string name="press_start_when_you_are_ready">Press Start when you are ready.</string>
+    <string name="info">Info</string>
+    <string name="bereit_zum_atmen">Bereit zum Atmen?</string>
+    <string name="done">Done</string>
+    <string name="_1_l">+1 l</string>
+    <string name="_1_2_l">+1/2 l</string>
+    <string name="daily_water_tracker">Daily Water Tracker</string>
+    <string name="steps_done_0">Steps done: 0</string>
+    <string name="name">Name</string>
+    <string name="find_all_pairs">Find all pairs!</string>
+    <string name="logbuch">📘 Logbuch</string>
+    <string name="logbuch_ffnen">📘 Logbuch öffnen</string>
 </resources>

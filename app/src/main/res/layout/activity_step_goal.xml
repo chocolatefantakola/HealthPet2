@@ -7,19 +7,19 @@
     android:background="@drawable/running_background"
     android:padding="24dp">
 
-    <!-- Steps done oben -->
+
     <TextView
         android:id="@+id/stepsTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Steps done: 0"
+        android:text="@string/steps_done_0"
         android:textSize="28sp"
         android:textColor="@android:color/white"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:textStyle="bold" />
 
-    <!-- Koala Animation darunter -->
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/koala_kisses.json"
         android:layout_width="200dp"
@@ -31,7 +31,7 @@
         app:lottie_fileName="koala_kisses.json"
         app:lottie_loop="true" />
 
-    <!-- Progress + remaining steps im unteren Bereich -->
+
     <LinearLayout
         android:id="@+id/progressContainer"
         android:layout_width="match_parent"
