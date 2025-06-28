@@ -24,7 +24,7 @@ import com.example.healthpet.R;
 import com.example.healthpet.data.AppDatabase;
 import com.example.healthpet.service.StepCounterService;
 import com.example.healthpet.util.DailyResetManager;
-
+import android.util.Log;
 import java.util.Calendar;
 
 public class HomeActivity extends AppCompatActivity {
@@ -167,10 +167,18 @@ public class HomeActivity extends AppCompatActivity {
             long todayStartMillis = getTodayStartMillisAt7();
 
             boolean stepDone = db.taskDao().isTaskCompletedAfter("StepGoal", todayStartMillis);
-            boolean waterDone = db.taskDao().isTaskCompletedAfter("waterGoal", todayStartMillis);
+            boolean waterDone = db.taskDao().isTaskCompletedAfter("Water", todayStartMillis);
             boolean breathingDone = db.taskDao().isTaskCompletedAfter("Breathing", todayStartMillis);
             boolean balanceDone = db.taskDao().isTaskCompletedAfter("Balance", todayStartMillis);
             boolean memoryDone = db.taskDao().isTaskCompletedAfter("Memory", todayStartMillis);
+
+
+            /*Log.d("HealthPetDebug", "stepDone: " + stepDone);
+            Log.d("HealthPetDebug", "waterDone: " + waterDone);
+            Log.d("HealthPetDebug", "breathingDone: " + breathingDone);
+            Log.d("HealthPetDebug", "balanceDone: " + balanceDone);
+            Log.d("HealthPetDebug", "memoryDone: " + memoryDone);
+            */
 
             boolean allDone = stepDone && waterDone && breathingDone && balanceDone && memoryDone;
 
@@ -179,7 +187,7 @@ public class HomeActivity extends AppCompatActivity {
                     currentLevel = 0;
                     showKoala(currentLevel);
                     handler.removeCallbacks(sadnessRunnable);
-                    welcomeTextView.setText("🎉 All tasks done! Koala is super happy!");
+                    welcomeTextView.setText("🎉 All tasks done! ");
                 } else {
                     scheduleSadness();
                 }
