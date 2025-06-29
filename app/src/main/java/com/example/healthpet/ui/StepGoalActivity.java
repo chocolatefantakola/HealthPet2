@@ -19,6 +19,10 @@ import com.example.healthpet.receiver.ResetReceiver;
 
 import java.util.Calendar;
 
+/**
+ * StepGoalActivity tracks the user's steps, displays progress towards the daily goal,
+ * and handles saving task completion.
+ */
 public class StepGoalActivity extends AppCompatActivity {
 
     private TextView stepsTextView, stepsRemainingTextView;
@@ -31,6 +35,9 @@ public class StepGoalActivity extends AppCompatActivity {
     private static final String KEY_LAST_DONE = "lastStepDone";
     private static final String KEY_STEPS_TODAY = "stepsToday";
 
+    /**
+     * Initializes the activity, UI, and checks step goal status.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +58,9 @@ public class StepGoalActivity extends AppCompatActivity {
         scheduleDailyReset();
     }
 
+    /**
+     * Reloads steps and updates UI on resume.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -62,6 +72,9 @@ public class StepGoalActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Loads today's steps from preferences and updates UI.
+     */
     private void loadSteps() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int stepsToday = prefs.getInt(KEY_STEPS_TODAY, 0);
@@ -71,6 +84,9 @@ public class StepGoalActivity extends AppCompatActivity {
         stepsProgressBar.setProgress(stepsToday);
     }
 
+    /**
+     * Checks if the goal is reached and saves completion if true.
+     */
     private void checkIfGoalReached() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int stepsToday = prefs.getInt(KEY_STEPS_TODAY, 0);
@@ -84,6 +100,9 @@ public class StepGoalActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Updates UI to reflect task is done.
+     */
     private void blockTask() {
         stepsTextView.setText("✅ Step goal completed today!");
         stepsRemainingTextView.setText("Come back after 7 AM tomorrow.");
@@ -91,6 +110,9 @@ public class StepGoalActivity extends AppCompatActivity {
         Toast.makeText(this, "You've already completed this task today.", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Checks if task was completed today.
+     */
     private boolean isTaskCompletedToday() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
@@ -107,16 +129,25 @@ public class StepGoalActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks if two Calendar instances represent the same day.
+     */
     private boolean isSameDay(Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * Saves the last done timestamp.
+     */
     private void saveLastDoneTime() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
     }
 
+    /**
+     * Saves task completion to database.
+     */
     private void saveTaskCompletion() {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
@@ -127,6 +158,9 @@ public class StepGoalActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Schedules daily reset at 7 AM.
+     */
     private void scheduleDailyReset() {
         Intent intent = new Intent(this, ResetReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent,

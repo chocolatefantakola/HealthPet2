@@ -24,20 +24,22 @@ import com.example.healthpet.model.TaskCompletion;
 
 import java.util.Calendar;
 
+/**
+ * BalanceTaskActivity handles the balance exercise using the accelerometer sensor.
+ * It guides the user through right and left leg balancing tasks and tracks completion.
+ */
 public class BalanceTaskActivity extends AppCompatActivity implements SensorEventListener {
 
+    // Sensor and UI components
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
-
     private TextView timerText;
     private Button startButton;
     private BalanceView balanceView;
     private TextView mainText;
     private ImageView infoIcon;
 
-    private enum Stage {
-        READY, COUNTDOWN, RIGHT_LEG, REST, LEFT_LEG, DONE
-    }
+    private enum Stage { READY, COUNTDOWN, RIGHT_LEG, REST, LEFT_LEG, DONE }
 
     private Stage currentStage = Stage.READY;
     private boolean isBalancing = false;
@@ -51,11 +53,15 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
     private static final String PREFS_NAME = "BalancePrefs";
     private static final String KEY_LAST_DONE = "lastBalanceDone";
 
+    /**
+     * Initializes the activity, views, sensor, and logic.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_balance_task);
 
+        // Initialize views
         mainText = findViewById(R.id.mainText);
         infoIcon = findViewById(R.id.infoIcon);
         timerText = findViewById(R.id.timerText);
@@ -64,6 +70,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
 
         infoIcon.setOnClickListener(v -> showInstructionDialog());
 
+        // Initialize sensor
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {
             accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -86,6 +93,9 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }
     }
 
+    /**
+     * Starts the balance task session with countdown and balance phases.
+     */
     private void startSession() {
         infoIcon.setVisibility(View.GONE);
         mainText.setVisibility(View.GONE);
@@ -98,11 +108,7 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
             new CountDownTimer(4000, 1000) {
                 public void onTick(long millisUntilFinished) {
                     int secondsLeft = (int) (millisUntilFinished / 1000);
-                    if (secondsLeft > 0) {
-                        timerText.setText(String.valueOf(secondsLeft));
-                    } else {
-                        timerText.setText("Go!");
-                    }
+                    timerText.setText(secondsLeft > 0 ? String.valueOf(secondsLeft) : "Go!");
                 }
                 public void onFinish() {
                     currentStage = Stage.RIGHT_LEG;
@@ -112,6 +118,9 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }
     }
 
+    /**
+     * Starts the balance timer for the current leg.
+     */
     private void startBalanceTimer() {
         isBalancing = true;
         timerText.setText("10");
@@ -126,15 +135,17 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                     showRestDialog("Great! Now take a break and press Start when you're ready for the left leg.");
                 } else if (currentStage == Stage.LEFT_LEG) {
                     currentStage = Stage.DONE;
-                    finishSuccess();  // Nur jetzt wird gespeichert!
+                    finishSuccess();
                 }
             }
         }.start();
     }
 
+    /**
+     * Displays rest instructions between leg tasks.
+     */
     private void showRestDialog(String message) {
-        if (isFinishing() || isDestroyed()) return;  // ✅ Activity ist nicht mehr aktiv → kein Dialog
-
+        if (isFinishing() || isDestroyed()) return;
         new AlertDialog.Builder(this)
                 .setTitle("Rest")
                 .setMessage(message)
@@ -147,14 +158,13 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
                 .show();
     }
 
+    /**
+     * Handles task completion logic and saves to logbook.
+     */
     private void finishSuccess() {
         timerText.setText("");
-
-
-        long now = System.currentTimeMillis();
         saveLastDoneTime();
-        saveTaskCompletion(now);
-
+        saveTaskCompletion(System.currentTimeMillis());
         if (!isFinishing() && !isDestroyed()) {
             new AlertDialog.Builder(this)
                     .setTitle("🎉 Balance Success!")
@@ -170,11 +180,17 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }
     }
 
+    /**
+     * Saves the last done timestamp to preferences.
+     */
     private void saveLastDoneTime() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
     }
 
+    /**
+     * Saves task completion entry to the database.
+     */
     private void saveTaskCompletion(long timestamp) {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
@@ -185,23 +201,30 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         }).start();
     }
 
+    /**
+     * Checks if the balance task was completed today.
+     */
     private boolean isTaskCompletedToday() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
         if (lastDoneMillis == 0) return false;
-
         Calendar now = Calendar.getInstance();
         Calendar lastDone = Calendar.getInstance();
         lastDone.setTimeInMillis(lastDoneMillis);
-
         return isSameDay(now, lastDone) && now.get(Calendar.HOUR_OF_DAY) >= 7;
     }
 
+    /**
+     * Checks if two Calendar instances represent the same day.
+     */
     private boolean isSameDay(Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * Disables the task button and informs the user.
+     */
     private void blockTask() {
         startButton.setEnabled(false);
         startButton.setText("✅ Already done today");
@@ -209,10 +232,12 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         Toast.makeText(this, "Task already done today.", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Displays a dialog when the user fails the balance task.
+     */
     private void showFailDialog() {
         isBalancing = false;
         if (balanceTimer != null) balanceTimer.cancel();
-
         runOnUiThread(() -> {
             new AlertDialog.Builder(this)
                     .setTitle("Oops!")
@@ -224,6 +249,9 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
         });
     }
 
+    /**
+     * Resets the UI for a new balance session.
+     */
     private void restartSession() {
         currentStage = Stage.READY;
         mainText.setVisibility(View.VISIBLE);
@@ -253,7 +281,6 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
             float y = event.values[1];
             filteredX = ALPHA * x + (1 - ALPHA) * filteredX;
             filteredY = ALPHA * y + (1 - ALPHA) * filteredY;
-
             balanceView.updateBalance(filteredX, filteredY);
         }
     }
@@ -261,6 +288,9 @@ public class BalanceTaskActivity extends AppCompatActivity implements SensorEven
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
+    /**
+     * Displays the instruction dialog.
+     */
     private void showInstructionDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Instructions")

@@ -12,11 +12,15 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.IBinder;
+
 import androidx.core.app.NotificationCompat;
 
 import com.example.healthpet.R;
 
-
+/**
+ * StepCounterService runs as a foreground service to monitor step count using the device's sensor.
+ * It updates SharedPreferences with step data and handles notifications.
+ */
 public class StepCounterService extends Service implements SensorEventListener {
 
     private SensorManager sensorManager;
@@ -25,6 +29,9 @@ public class StepCounterService extends Service implements SensorEventListener {
     private float initialStepCount = -1;
     private static final int dailyStepGoal = 10000;
 
+    /**
+     * Called when the service is created. Initializes sensors and starts foreground service.
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,6 +49,9 @@ public class StepCounterService extends Service implements SensorEventListener {
         loadInitialStepCount();
     }
 
+    /**
+     * Starts the service in the foreground with a notification.
+     */
     private void startForegroundService() {
         String channelId = "StepCounterChannel";
         String channelName = "Step Counter";
@@ -63,6 +73,9 @@ public class StepCounterService extends Service implements SensorEventListener {
         startForeground(1, notification);
     }
 
+    /**
+     * Unregisters the sensor listener when the service is destroyed.
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -74,6 +87,9 @@ public class StepCounterService extends Service implements SensorEventListener {
         return null;
     }
 
+    /**
+     * Called when sensor data changes. Updates step count.
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         float totalStepsSinceReboot = event.values[0];
@@ -92,17 +108,25 @@ public class StepCounterService extends Service implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
-    // Speicher Methoden
+    /**
+     * Saves the initial step count to preferences.
+     */
     private void saveInitialStepCount(float value) {
         SharedPreferences prefs = getSharedPreferences("stepPrefs", MODE_PRIVATE);
         prefs.edit().putFloat("initialStepCount", value).apply();
     }
 
+    /**
+     * Saves today's steps to preferences.
+     */
     private void saveStepsToday(int stepsToday) {
         SharedPreferences prefs = getSharedPreferences("stepPrefs", MODE_PRIVATE);
         prefs.edit().putInt("stepsToday", stepsToday).apply();
     }
 
+    /**
+     * Loads the initial step count from preferences.
+     */
     private void loadInitialStepCount() {
         SharedPreferences prefs = getSharedPreferences("stepPrefs", MODE_PRIVATE);
         initialStepCount = prefs.getFloat("initialStepCount", -1);

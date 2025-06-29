@@ -18,6 +18,10 @@ import com.example.healthpet.model.TaskCompletion;
 
 import java.util.Calendar;
 
+/**
+ * BreathingTaskActivity handles the guided breathing exercise in the HealthPet app.
+ * It animates the breathing cycle, tracks completion, and saves task results.
+ */
 public class BreathingTaskActivity extends AppCompatActivity {
 
     private static final int BREATH_IN_DURATION = 4000;
@@ -35,6 +39,11 @@ public class BreathingTaskActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "BreathingPrefs";
     private static final String KEY_LAST_DONE = "lastBreathingDone";
 
+    /**
+     * Initializes the activity, views, and breathing task logic.
+     *
+     * @param savedInstanceState The saved state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +72,9 @@ public class BreathingTaskActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Starts one full breathing cycle including inhale, hold, and exhale phases.
+     */
     private void startBreathingCycle() {
         if (currentCycle >= TOTAL_CYCLES) {
             instructionText.setText("🎉 Geschafft!");
@@ -103,6 +115,13 @@ public class BreathingTaskActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Animates the breathing circle for the given phase.
+     *
+     * @param scale      Target scale of the circle.
+     * @param duration   Animation duration in milliseconds.
+     * @param onComplete Runnable to run after animation ends.
+     */
     private void animateBreathingPhase(float scale, int duration, Runnable onComplete) {
         breathingCircle.animate()
                 .scaleX(scale)
@@ -112,13 +131,19 @@ public class BreathingTaskActivity extends AppCompatActivity {
                 .start();
     }
 
-
-
+    /**
+     * Saves the timestamp of the last completed breathing task.
+     */
     private void saveLastDoneTime() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
     }
 
+    /**
+     * Checks if the breathing task was already completed today.
+     *
+     * @return true if completed today after 7 AM, false otherwise.
+     */
     private boolean isTaskCompletedToday() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
@@ -135,11 +160,21 @@ public class BreathingTaskActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Compares two Calendar instances to see if they represent the same day.
+     *
+     * @param cal1 First calendar.
+     * @param cal2 Second calendar.
+     * @return true if both represent the same day.
+     */
     private boolean isSameDay(Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * Disables the task button and informs the user that the task is already completed.
+     */
     private void blockTask() {
         startButton.setEnabled(false);
         startButton.setText("✅ Already done today");
@@ -147,8 +182,9 @@ public class BreathingTaskActivity extends AppCompatActivity {
         Toast.makeText(this, "Task already done today.", Toast.LENGTH_LONG).show();
     }
 
-    // ✅ --- Save to Logbook ---
-
+    /**
+     * Saves the breathing task completion to the local database logbook.
+     */
     private void saveTaskCompletion() {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),

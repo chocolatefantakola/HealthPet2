@@ -27,9 +27,7 @@
             android:name=".ui.QuestionnaireActivity"
             android:exported="true" />
 
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="false" />
+
 
         <activity
             android:name=".ui.BreathingTaskActivity"
@@ -62,12 +60,6 @@
 
         <receiver android:name=".receiver.ResetReceiver" />
 
-        <receiver android:name=".receiver.BootReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

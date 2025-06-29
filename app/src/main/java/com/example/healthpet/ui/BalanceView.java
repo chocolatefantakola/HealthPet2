@@ -7,6 +7,10 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * BalanceView is a custom view that displays a circle and a moving ball.
+ * The ball's position updates based on balance sensor data.
+ */
 public class BalanceView extends View {
 
     private float centerX, centerY;
@@ -14,11 +18,22 @@ public class BalanceView extends View {
     private float radius;
     private Paint circlePaint, ballPaint;
 
+    private BalanceFailListener failListener;
+
+    /**
+     * Constructor for BalanceView.
+     *
+     * @param context The Context the view is running in.
+     * @param attrs The attributes of the XML tag that is inflating the view.
+     */
     public BalanceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
+    /**
+     * Initializes paint objects for drawing the circle and ball.
+     */
     private void init() {
         circlePaint = new Paint();
         circlePaint.setColor(Color.parseColor("#000E47"));
@@ -29,6 +44,12 @@ public class BalanceView extends View {
         ballPaint.setStyle(Paint.Style.FILL);
     }
 
+    /**
+     * Updates the ball's position based on sensor input.
+     *
+     * @param x X-axis sensor value.
+     * @param y Y-axis sensor value.
+     */
     public void updateBalance(float x, float y) {
         if (radius == 0) return;
 
@@ -43,7 +64,7 @@ public class BalanceView extends View {
         float distance = (float) Math.sqrt(Math.pow(ballX - centerX, 2) + Math.pow(ballY - centerY, 2));
 
         if (distance <= radius) {
-            ballPaint.setColor(Color.BLACK);
+            ballPaint.setColor(Color.WHITE);
         } else {
             ballPaint.setColor(Color.RED);
             if (failListener != null) {
@@ -68,13 +89,19 @@ public class BalanceView extends View {
         canvas.drawCircle(ballX, ballY, 40, ballPaint);
     }
 
-    public interface BalanceFailListener {
-        void onBalanceFail();
-    }
-
-    private BalanceFailListener failListener;
-
+    /**
+     * Sets a listener that is called when balance fails (ball outside circle).
+     *
+     * @param listener The BalanceFailListener to set.
+     */
     public void setBalanceFailListener(BalanceFailListener listener) {
         this.failListener = listener;
+    }
+
+    /**
+     * Listener interface for balance failure events.
+     */
+    public interface BalanceFailListener {
+        void onBalanceFail();
     }
 }

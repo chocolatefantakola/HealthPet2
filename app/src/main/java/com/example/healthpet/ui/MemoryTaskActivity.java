@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 
+/**
+ * MemoryTaskActivity manages a simple memory game where the user matches pairs of images.
+ * The activity tracks completion and saves progress in a database.
+ */
 public class MemoryTaskActivity extends AppCompatActivity {
 
     private GridLayout memoryGrid;
@@ -44,6 +48,9 @@ public class MemoryTaskActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "MemoryPrefs";
     private static final String KEY_LAST_DONE = "lastMemoryDone";
 
+    /**
+     * Initializes the memory game activity and sets up the game if not already completed today.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +70,9 @@ public class MemoryTaskActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Prepares and shuffles the memory game tiles.
+     */
     private void setupGame() {
         cardValues.clear();
         for (int i = 0; i < 6; i++) {
@@ -94,6 +104,11 @@ public class MemoryTaskActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the logic when a card is clicked.
+     *
+     * @param index Index of the clicked card.
+     */
     private void onCardClicked(int index) {
         if (busy) return;
         ImageView clickedCard = tiles.get(index);
@@ -128,6 +143,11 @@ public class MemoryTaskActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks if all pairs have been found.
+     *
+     * @return true if all pairs are matched, false otherwise.
+     */
     private boolean checkWin() {
         for (ImageView tile : tiles) {
             if (!"matched".equals(tile.getTag())) {
@@ -137,6 +157,9 @@ public class MemoryTaskActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Called when the game is successfully completed.
+     */
     private void onGameCompleted() {
         instructionText.setText("🎉 All pairs found!");
         saveLastDoneTime();
@@ -150,11 +173,19 @@ public class MemoryTaskActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Saves the last done timestamp.
+     */
     private void saveLastDoneTime() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
     }
 
+    /**
+     * Checks if the memory task was already completed today.
+     *
+     * @return true if completed today, false otherwise.
+     */
     private boolean isTaskCompletedToday() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
@@ -167,11 +198,17 @@ public class MemoryTaskActivity extends AppCompatActivity {
         return isSameDay(now, lastDone) && now.get(Calendar.HOUR_OF_DAY) >= 7;
     }
 
+    /**
+     * Checks if two Calendar objects represent the same day.
+     */
     private boolean isSameDay(Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * Disables the game if already completed today.
+     */
     private void blockTask() {
         for (ImageView tile : tiles) {
             tile.setEnabled(false);
@@ -180,6 +217,9 @@ public class MemoryTaskActivity extends AppCompatActivity {
         Toast.makeText(this, "You’ve already completed this today. Come back tomorrow after 7 AM.", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Saves task completion in the database.
+     */
     private void saveTaskCompletion() {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),

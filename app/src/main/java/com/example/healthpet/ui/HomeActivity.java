@@ -28,6 +28,10 @@ import com.example.healthpet.util.DailyResetManager;
 
 import java.util.Calendar;
 
+/**
+ * HomeActivity is the main screen of the HealthPet app.
+ * It displays various task buttons and the Koala pet whose mood depends on completed tasks.
+ */
 public class HomeActivity extends AppCompatActivity {
 
     private ScrollView rootScrollView;
@@ -45,6 +49,13 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final int REQUEST_ACTIVITY_RECOGNITION = 1;
 
+    /**
+     * Called when the activity is starting.
+     * Initializes views, checks permissions and task completion status.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this Bundle contains the data it most recently supplied.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +73,6 @@ public class HomeActivity extends AppCompatActivity {
             return;
         }
 
-
         rootScrollView = findViewById(R.id.rootScrollView);
         welcomeTextView = findViewById(R.id.welcomeTextView);
         stepGoalButton = findViewById(R.id.stepGoalButton);
@@ -74,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
         logbookButton = findViewById(R.id.logbookButton);
         ImageButton infoButton = findViewById(R.id.infoButton);
 
-        // Koalas Setup (Mood levels: 0-happy, 1-neutral, 2-sad, 3-crying)
+        // Initialize Koala mood views
         koalas = new LottieAnimationView[]{
                 findViewById(R.id.koala_1),
                 findViewById(R.id.koala_2),
@@ -84,7 +94,7 @@ public class HomeActivity extends AppCompatActivity {
 
         showKoala(currentMood);
 
-
+        // Set button colors
         stepGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
         waterGoalButton.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
         memoryTaskButton.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
@@ -93,7 +103,7 @@ public class HomeActivity extends AppCompatActivity {
 
         checkBreathingTaskBlocked(prefs);
 
-
+        // Set button listeners
         stepGoalButton.setOnClickListener(v -> startActivity(new Intent(this, StepGoalActivity.class)));
         waterGoalButton.setOnClickListener(v -> startActivity(new Intent(this, WaterGoalActivity.class)));
         memoryTaskButton.setOnClickListener(v -> startActivity(new Intent(this, MemoryTaskActivity.class)));
@@ -141,6 +151,11 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the UI for the breathing task button depending on whether the task is blocked.
+     *
+     * @param prefs SharedPreferences containing breathingBlocked status
+     */
     private void checkBreathingTaskBlocked(SharedPreferences prefs) {
         boolean breathingBlocked = prefs.getBoolean("breathingBlocked", false);
         if (breathingBlocked) {
@@ -154,6 +169,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks task completion status from the database and updates the Koala's mood accordingly.
+     */
     private void checkTasksAndUpdateMood() {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
@@ -167,19 +185,12 @@ public class HomeActivity extends AppCompatActivity {
             boolean balanceDone = db.taskDao().isTaskCompletedAfter("Balance", todayStartMillis);
             boolean memoryDone = db.taskDao().isTaskCompletedAfter("Memory", todayStartMillis);
 
-            /* Log.d("HealthPetDebug", "stepDone: " + stepDone);
-            Log.d("HealthPetDebug", "waterDone: " + waterDone);
-            Log.d("HealthPetDebug", "breathingDone: " + breathingDone);
-            Log.d("HealthPetDebug", "balanceDone: " + balanceDone);
-            Log.d("HealthPetDebug", "memoryDone: " + memoryDone);*/
-
             int tasksCompleted = 0;
             if (stepDone) tasksCompleted++;
             if (waterDone) tasksCompleted++;
             if (breathingDone) tasksCompleted++;
             if (balanceDone) tasksCompleted++;
             if (memoryDone) tasksCompleted++;
-
 
             int mood;
             if (tasksCompleted >= 5) {
@@ -200,12 +211,19 @@ public class HomeActivity extends AppCompatActivity {
                 if (mood == 0) {
                     welcomeTextView.setText("🎉 All tasks done!");
                 } else {
-                    welcomeTextView.setText("Complete more tasks to make Koala happier!");
+                    String userName = getSharedPreferences("HealthPetPrefs", MODE_PRIVATE)
+                            .getString("userName", "User");
+                    welcomeTextView.setText("Hi " + userName + "! Complete more tasks to make Koala happier!");
                 }
             });
         }).start();
     }
 
+    /**
+     * Returns the timestamp for today at 7 AM, or yesterday at 7 AM if current time is before 7 AM.
+     *
+     * @return timestamp in milliseconds
+     */
     private long getTodayStartMillisAt7() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 7);
@@ -219,6 +237,11 @@ public class HomeActivity extends AppCompatActivity {
         return calendar.getTimeInMillis();
     }
 
+    /**
+     * Displays the Koala animation corresponding to the given mood.
+     *
+     * @param mood Koala mood index (0 = happy, 1 = neutral, 2 = sad, 3 = crying)
+     */
     private void showKoala(int mood) {
         for (int i = 0; i < koalas.length; i++) {
             koalas[i].setVisibility(i == mood ? View.VISIBLE : View.GONE);
@@ -226,6 +249,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks and requests activity recognition permission if necessary.
+     */
     private void checkActivityRecognitionPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
@@ -241,6 +267,13 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the result of permission requests.
+     *
+     * @param requestCode  The request code passed in requestPermissions
+     * @param permissions  The requested permissions
+     * @param grantResults The grant results for the corresponding permissions
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -253,6 +286,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Starts the step counter foreground service.
+     */
     private void startStepCounterService() {
         Intent serviceIntent = new Intent(this, StepCounterService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

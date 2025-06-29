@@ -16,6 +16,10 @@ import com.example.healthpet.model.TaskCompletion;
 
 import java.util.Calendar;
 
+/**
+ * WaterGoalActivity tracks the user's water intake and manages progress towards the daily goal.
+ * It saves progress and handles completion logic.
+ */
 public class WaterGoalActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "WaterPrefs";
@@ -28,6 +32,9 @@ public class WaterGoalActivity extends AppCompatActivity {
 
     private Button buttonQuarter, buttonHalf, buttonOne, buttonDone;
 
+    /**
+     * Initializes the activity, loads saved data, and sets up buttons.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +46,6 @@ public class WaterGoalActivity extends AppCompatActivity {
         buttonOne = findViewById(R.id.button_one);
         buttonDone = findViewById(R.id.button_done);
 
-
         if (isTaskCompletedToday()) {
             blockTask();
         } else {
@@ -48,6 +54,9 @@ public class WaterGoalActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets up button click listeners for water intake.
+     */
     private void setupButtons() {
         buttonQuarter.setOnClickListener(v -> addWater(250));
         buttonHalf.setOnClickListener(v -> addWater(500));
@@ -55,6 +64,11 @@ public class WaterGoalActivity extends AppCompatActivity {
         buttonDone.setOnClickListener(v -> finishWaterGoal());
     }
 
+    /**
+     * Adds water intake and checks if goal is reached.
+     *
+     * @param ml Milliliters added.
+     */
     private void addWater(long ml) {
         waterAmount += ml;
         saveWaterAmount(waterAmount);
@@ -69,10 +83,16 @@ public class WaterGoalActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Updates the water amount text view.
+     */
     private void updateWaterText() {
         textWaterAmount.setText(waterAmount + " ml");
     }
 
+    /**
+     * Loads saved water amount and goal status.
+     */
     private void loadSavedData() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         waterAmount = prefs.getLong(KEY_WATER_AMOUNT, 0);
@@ -80,21 +100,33 @@ public class WaterGoalActivity extends AppCompatActivity {
         updateWaterText();
     }
 
+    /**
+     * Saves the current water amount.
+     */
     private void saveWaterAmount(long amount) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putLong(KEY_WATER_AMOUNT, amount).apply();
     }
 
+    /**
+     * Saves the goal reached flag.
+     */
     private void saveGoalReachedFlag(boolean reached) {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putBoolean("goalReached", reached).apply();
     }
 
+    /**
+     * Saves the last done timestamp.
+     */
     private void saveLastDoneTime() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit().putLong(KEY_LAST_DONE, System.currentTimeMillis()).apply();
     }
 
+    /**
+     * Checks if task was completed today.
+     */
     private boolean isTaskCompletedToday() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         long lastDoneMillis = prefs.getLong(KEY_LAST_DONE, 0);
@@ -105,20 +137,24 @@ public class WaterGoalActivity extends AppCompatActivity {
         lastDone.setTimeInMillis(lastDoneMillis);
 
         if (isSameDay(now, lastDone)) {
-
             return now.get(Calendar.HOUR_OF_DAY) >= 7;
         } else {
-
             resetDailyProgress();
             return false;
         }
     }
 
+    /**
+     * Checks if two Calendar instances represent the same day.
+     */
     private boolean isSameDay(Calendar cal1, Calendar cal2) {
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
+    /**
+     * Resets daily water intake progress.
+     */
     private void resetDailyProgress() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         prefs.edit()
@@ -129,6 +165,9 @@ public class WaterGoalActivity extends AppCompatActivity {
         goalReached = false;
     }
 
+    /**
+     * Disables buttons and informs the user that task is done.
+     */
     private void blockTask() {
         buttonQuarter.setEnabled(false);
         buttonHalf.setEnabled(false);
@@ -138,6 +177,9 @@ public class WaterGoalActivity extends AppCompatActivity {
         Toast.makeText(this, "You’ve already completed this today. Come back tomorrow after 7 AM.", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Shows a success dialog when the goal is reached.
+     */
     private void showSuccess() {
         new AlertDialog.Builder(this)
                 .setTitle("🎉 Hydration Goal Reached!")
@@ -146,6 +188,9 @@ public class WaterGoalActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Shows a dialog when the user finishes manually.
+     */
     private void finishWaterGoal() {
         new AlertDialog.Builder(this)
                 .setTitle("💧 Progress Saved")
@@ -154,6 +199,9 @@ public class WaterGoalActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Saves task completion to the database.
+     */
     private void saveTaskCompletion() {
         new Thread(() -> {
             AppDatabase db = Room.databaseBuilder(getApplicationContext(),
